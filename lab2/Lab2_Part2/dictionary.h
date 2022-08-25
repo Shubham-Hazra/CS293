@@ -55,7 +55,6 @@ class Dictionary {
   
   // Returns a pointer to the array of Journies which has the given key
   struct Journey *give_list(string key);
-
 };
 
 

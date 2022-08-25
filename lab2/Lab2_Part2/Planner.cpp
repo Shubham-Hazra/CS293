@@ -8,12 +8,16 @@ int main()
     string s;
     do
     {
-        cin>>s;
-        if(s=="ADD")
+        getline(cin,s);
+        stringstream ss(s);
+        string q;
+        ss>>q;
+        // cin>>s;
+        if(q=="ADD")
         {
             string station_one,station_two;
             float start_time,finish_time;
-            cin>>station_one>>start_time>>station_two>>finish_time;
+            ss>>station_one>>start_time>>station_two>>finish_time;
             bool a =p.add(station_one,start_time,station_two,finish_time);
             if(a)
             {
@@ -25,11 +29,11 @@ int main()
                 continue;
             }
         }
-        else if(s=="QUERY_STATION")
+        else if(q=="QUERY_STATION")
         {
             string station_one;
             float start_time;
-            cin>>station_one>>start_time;
+            ss>>station_one>>start_time;
             bool a = p.query_station(station_one,start_time);
             if(a)
             {
@@ -41,11 +45,11 @@ int main()
                 continue;
             }
         }
-        else if(s=="QUERY_JOURNEY")
+        else if(q=="QUERY_JOURNEY")
         {
             string station_one,station_two;
             float start_time;
-            cin>>station_one>>start_time>>station_two;
+            ss>>station_one>>start_time>>station_two;
             bool a = p.query_journey(station_one,start_time,station_two);
             if(a)
             {

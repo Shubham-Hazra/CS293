@@ -123,6 +123,29 @@ bool Dictionary::put(struct Entry e)
     }
 
 // Inserts a new Journey into the array of journies
+// bool Dictionary::insert(struct Journey j)
+// {
+//     int index = findFreeIndex(j.start); //Finding index to insert the element
+//     if(index == -1)
+//     {
+//         return false;
+//     }
+//     if(A[index].num_journies==0)
+//     {
+//         A[index].key = j.start;
+//         A[index].list[0]=j;
+//         A[index].num_journies++;
+//         num_elements++; 
+//     }
+//     else
+//     {
+//         int num = A[index].num_journies;
+//         A[index].list[num]=j;
+//         A[index].num_journies++;
+//     }
+//     return true;
+// }
+
 bool Dictionary::insert(struct Journey j)
 {
     int index = findFreeIndex(j.start); //Finding index to insert the element
@@ -136,14 +159,40 @@ bool Dictionary::insert(struct Journey j)
         A[index].list[0]=j;
         A[index].num_journies++;
         num_elements++; 
+        return true;
+    }
+    else if(A[index].num_journies==64)
+    {
+        return false;
     }
     else
     {
-        int num = A[index].num_journies;
-        A[index].list[num]=j;
-        A[index].num_journies++;
+        int num=0;
+        while(A[index].list[num].start_time<=j.start_time && num<A[index].num_journies)
+        {
+            num++;
+        }
+        if(num==A[index].num_journies)
+        {
+            A[index].list[num]=j;
+            A[index].num_journies++;
+            return true;
+        }
+        else
+        {
+            Journey term = A[index].list[num];
+            A[index].list[num]=j;
+            for(int i= num+1;i<A[index].num_journies;i++ )
+            {
+                Journey temp = A[index].list[i];
+                A[index].list[i]=term;
+                term = temp;
+            }
+            A[index].list[A[index].num_journies]=term;
+            A[index].num_journies++;
+            return true;
+        }
     }
-    return true;
 }
 
 // Returns the pointer to the list of journies
@@ -152,5 +201,3 @@ struct Journey *Dictionary::give_list(string key)
     int index = findFreeIndex(key);
     return A[index].list;
 }
-
-
