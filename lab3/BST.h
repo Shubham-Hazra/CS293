@@ -81,6 +81,7 @@ public:
         // encountered on traversing the BST in the given traversal order
 	void traverse(int typeOfTraversal);
 
+        // Functions to support recursion
         void preorder(TreeNode* ptr);
 
         void postorder(TreeNode* ptr);
@@ -97,6 +98,10 @@ public:
 
         TreeNode* get(int JourneyCode,int pice);
 
+        int countJourneysInPriceBound(int lowerPriceBound, int upperPriceBound,TreeNode* ptr);
+
+        void storeBST(ofstream &outfile,TreeNode* ptr,TreeNode* ptr_parent);
+
 	// Returns the price of the cheapest journey
 	int getMinimum();
 
@@ -107,8 +112,7 @@ public:
         // as lowerPriceBound and at most as expensive as upperPriceBound,
         // both bounds included.
         int countJourneysInPriceBound(int lowerPriceBound, int upperPriceBound);
-        int countJourneysInPriceBound(int lowerPriceBound, int upperPriceBound,TreeNode* ptr);
-	
+        
 	// Store the current tree in a file called filename.  You should
         // store using a scheme that uses no more disk space than that
         // required to store all elements in the BST, plus perhaps a small
@@ -116,9 +120,7 @@ public:
         // in a manner such that your implementation of customLoad is as
         // memory and time efficient as possible.
 	void customStore(string filename);
-
-        void storeBST(ofstream &outfile,TreeNode* ptr,TreeNode* ptr_parent);
-	
+        	
 	// While loading a tree from a file written by customStore, we
         // can have one of two modes of loading.  We could either ask
         // for the entire tree to be loaded or only the left subtree of

@@ -17,6 +17,8 @@ using namespace std;
 
 // PLEASE FILL IN THE BODIES OF THE FOLLOWING FUNCTIONS
 
+
+//Constructor functions
 BST::BST()
 { 
     root = new TreeNode();
@@ -31,11 +33,11 @@ BST::BST(TreeNode *root)
 // Inserts the element and returns True otherwise
 bool BST::insert(int JourneyCode, int price)
 {
-    if(findjourney(JourneyCode))
+    if(findjourney(JourneyCode)) //Returns false if JourneyCode already present
     {
-        return false;
+        return false;  
     }
-    if(root->JourneyCode==0 && root->price==0)
+    if(root->JourneyCode==0 && root->price==0) //For empty tree, initializes root
     {
         root->JourneyCode=JourneyCode;
         root->price=price;
@@ -44,9 +46,9 @@ bool BST::insert(int JourneyCode, int price)
     TreeNode* ptr_parent=NULL;
     TreeNode* ptr=root;
     
-    while(ptr!=NULL)
+    while(ptr!=NULL) // General insertion at the leaves
     {
-        if(price>ptr->price)
+        if(price>ptr->price) // Finds the leaf to insert at
         {  
             ptr_parent=ptr;
             ptr = ptr->right;
@@ -59,7 +61,7 @@ bool BST::insert(int JourneyCode, int price)
             continue;
         }
     }
-    if(ptr_parent->price>=price)
+    if(ptr_parent->price>=price) // Checks whether to insert as left or right child
     {
         ptr_parent->left=new TreeNode(JourneyCode,price);
         ptr_parent->left->parent=ptr_parent;
@@ -77,11 +79,11 @@ bool BST::insert(int JourneyCode, int price)
 bool BST::find(int JourneyCode, int price)
 {   
     TreeNode* ptr = root;
-    while (ptr!=NULL)
+    while (ptr!=NULL) //Looping till ptr becomes NULL
     {
-        if(price==ptr->price)
+        if(price==ptr->price) // Checks for the price and moves to left or right child accordingly
         {
-            if(JourneyCode==ptr->JourneyCode)
+            if(JourneyCode==ptr->JourneyCode) // Checks if the JourneyCodes are equal and returns true if equal else continues
             {
                 return true;
             }
@@ -106,27 +108,31 @@ bool BST::find(int JourneyCode, int price)
    
 }
 
+//Returns true if an entry with the given journey code is found 
 bool BST::findjourney(int JourneyCode)
 {
     return findjourney(JourneyCode,root);
 }
 
-bool BST::findjourney(int JourneyCode,TreeNode* ptr)
+//Function for recursion to find JourneyCode
+bool BST::findjourney(int JourneyCode,TreeNode* ptr)  
 {
-    if(ptr==NULL)
+    if(ptr==NULL) // Returns false if pointer is NULL
     {
         return false;
     }
-    if(ptr->JourneyCode==JourneyCode)
+    if(ptr->JourneyCode==JourneyCode) // Checks at the pointer, returns true if found
     {
         return true;
     }
     else
     {
-        return findjourney(JourneyCode,ptr->left)||findjourney(JourneyCode,ptr->right);   
+        return findjourney(JourneyCode,ptr->left)||findjourney(JourneyCode,ptr->right); // Checks the left and right subtree 
     }
 }
 
+
+//Returns the pointer to the given entry if found else returns NULL
 TreeNode* BST::get(int JourneyCode,int price)
 {
     TreeNode* ptr = root;
@@ -267,79 +273,10 @@ bool BST::remove(int JourneyCode, int price)
         }
     }
     return true;
-    // if(!findjourney(JourneyCode))
-    // {
-    //     return false;
-    // }
-    // TreeNode* element = get(JourneyCode,price);
-    // if(element->left==NULL && element->right==NULL)
-    // {
-    //     if(element==element->parent->left)
-    //     {
-    //         element->parent->left=NULL;
-    //     }
-    //     else
-    //     {
-    //         element->parent->right=NULL;
-    //     }
-    // }
-    // else if(element->left==NULL || element->right==NULL)
-    // {
-    //     if(element->parent==NULL)
-    //     {
-    //         if(element->left==NULL)
-    //         {
-    //             root=element->right;
-    //             element->right->parent=NULL;
-    //         }
-    //         else
-    //         {
-    //             root=element->left;
-    //             element->left->parent=NULL;
-    //         }
-    //         return true;
-    //     }
-    //     if(element->left==NULL)
-    //     {
-    //         if(element==element->parent->left)
-    //     {
-    //         element->parent->left=element->right;
-    //     }
-    //     else
-    //     {
-    //         element->parent->right=element->right;
-    //     }
-    //     }
-    //     else
-    //     {
-    //         if(element==element->parent->left)
-    //     {
-    //         element->parent->left=element->left;
-    //     }
-    //     else
-    //     {
-    //         element->parent->right=element->left;
-    //     }
-    //     }
-    // }
-    // if(element->left!=NULL && element->right!=NULL)
-    // {   
-    //     TreeNode* succ = successor(JourneyCode,price);
-    //     element->JourneyCode=succ->JourneyCode;
-    //     element->price=succ->price;
-    //     if(succ == succ->parent->left)
-    //     {
-    //         succ->parent->left=succ->right;
-    //     }
-    //     else
-    //     {
-    //         succ->parent->right=succ->right;
-    //     }
-    // }
-    // return true;
-
 }
 
+
+//Returns the pointer to the successor of the given node if found or else returns NULL 
 TreeNode* BST::successor(int JourneyCode,int price)
 {
     TreeNode* element = get(JourneyCode,price);
@@ -399,6 +336,7 @@ void BST::traverse(int typeOfTraversal)
     }
 }
 
+//Function to use recursion to find preorder traversal
 void BST::preorder(TreeNode* ptr)
 {
     cout<<ptr->JourneyCode<<endl;
@@ -421,6 +359,7 @@ void BST::preorder(TreeNode* ptr)
 
 }
 
+//Function to use recursion to find postorder traversal
 void BST::postorder(TreeNode* ptr)
 {
     if(ptr->left==NULL)
@@ -442,6 +381,7 @@ void BST::postorder(TreeNode* ptr)
         cout<<ptr->JourneyCode<<endl;
 }
 
+//Function to use recursion to find inorder traversal
 void BST::inorder(TreeNode* ptr)
 {
      if(ptr->left==NULL)
@@ -479,6 +419,7 @@ int BST::getMinimum()
     return ptr_parent->price;
 }
 
+//Returns the pointer to the root 
 TreeNode* BST::getroot()
 {
     return root;
@@ -494,6 +435,8 @@ int BST::countJourneysInPriceBound(int lowerPriceBound, int upperPriceBound)
     return countJourneysInPriceBound(lowerPriceBound,upperPriceBound,root);
 }
 
+
+//Function to use recursion to get the number of journies
 int BST::countJourneysInPriceBound(int lowerPriceBound, int upperPriceBound,TreeNode* ptr)
 {
     if(ptr==NULL)
@@ -525,16 +468,15 @@ void BST::customStore(string filename)
     outfile.close();
 }
 
+
+//Function to support recursion to store the BST
+//Takes a file pointer as argument
 void BST::storeBST(ofstream &outfile,TreeNode* ptr,TreeNode* ptr_parent)
 {
-    // ofstream outfile;
-    // outfile.open(filename);
     if(ptr==NULL)
     {
         return;
     }
-    // int journey = ptr->JourneyCode;
-    // int price = ptr->price;
     outfile<<ptr->JourneyCode<<","<<ptr->price<<",";
     if(ptr->left!=NULL && ptr->right!=NULL)
     {
@@ -587,7 +529,7 @@ void BST::storeBST(ofstream &outfile,TreeNode* ptr,TreeNode* ptr_parent)
  
 void BST::customLoad (int flag, string filename)
 {
-    if(flag==4)
+    if(flag==4)  //To load the left subtree
     {
     ifstream infile;
     infile.open(filename);
@@ -665,7 +607,7 @@ void BST::customLoad (int flag, string filename)
         }
     }
     } 
-    if(flag==3)
+    if(flag==3)  //To load the Full BST
     {
         ifstream infile;
     infile.open(filename);

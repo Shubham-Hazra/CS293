@@ -35,7 +35,7 @@ int main(){
 			do{
 				j = rand();
 				k = rand() % 100000;
-			}while(js.find(j)==js.end() && ks.find(k)==ks.end());
+			}while(js.find(j)!=js.end() && ks.find(k)!=ks.end());
 			b1->insert(j,k);
 			js.insert(j);
 			ks.insert(k);

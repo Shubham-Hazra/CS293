@@ -31,7 +31,7 @@ int main(){
 		}
         b1->printBST("");
 		b1->customStore("test.txt");
-        // BST *b1 = new BST();
-        // b1->customLoad(4,"test.txt");
-        // b1->printBST("");
+        BST *b2 = new BST();
+        b2->customLoad(4,"test.txt");
+        b2->printBST("");
 	}
