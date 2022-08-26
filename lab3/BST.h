@@ -117,7 +117,7 @@ public:
         // memory and time efficient as possible.
 	void customStore(string filename);
 
-        void storeBST(string filename,TreeNode* ptr,TreeNode* ptr_parent);
+        void storeBST(ofstream &outfile,TreeNode* ptr,TreeNode* ptr_parent);
 	
 	// While loading a tree from a file written by customStore, we
         // can have one of two modes of loading.  We could either ask

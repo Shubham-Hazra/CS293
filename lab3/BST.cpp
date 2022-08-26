@@ -519,60 +519,51 @@ int BST::countJourneysInPriceBound(int lowerPriceBound, int upperPriceBound,Tree
 // memory and time efficient as possible.
 void BST::customStore(string filename)
 {
-    storeBST(filename,root,NULL);
-}
-
-void BST::storeBST(string filename,TreeNode* ptr,TreeNode* ptr_parent)
-{
     ofstream outfile;
     outfile.open(filename);
+    storeBST(outfile,root,NULL);
+    outfile.close();
+}
+
+void BST::storeBST(ofstream &outfile,TreeNode* ptr,TreeNode* ptr_parent)
+{
+    // ofstream outfile;
+    // outfile.open(filename);
     if(ptr==NULL)
     {
         return;
     }
-    int journey = ptr->JourneyCode;
-    int price = ptr->price;
-    outfile<<to_string(journey)<<","<<to_string(price)<<",";
-    cout<<ptr->JourneyCode<<","<<ptr->price<<",";
+    // int journey = ptr->JourneyCode;
+    // int price = ptr->price;
+    outfile<<ptr->JourneyCode<<","<<ptr->price<<",";
     if(ptr->left!=NULL && ptr->right!=NULL)
     {
         outfile<<"("<<",";
-        cout<<"("<<",";
-        storeBST(filename,ptr->left,ptr);
+        storeBST(outfile,ptr->left,ptr);
         outfile<<")"<<",";
         outfile<<"{"<<",";
-        cout<<")"<<",";
-        cout<<"{"<<",";
-        storeBST(filename,ptr->right,ptr);
+        storeBST(outfile,ptr->right,ptr);
         outfile<<"}"<<",";
-        cout<<"}"<<",";
     }
     else if(ptr->left!=NULL || ptr->right!=NULL)
     {
         if(ptr->left==NULL)
         {
             outfile<<"{"<<",";
-            cout<<"{"<<",";
-            storeBST(filename,ptr->right,ptr);
+            storeBST(outfile,ptr->right,ptr);
             outfile<<"}"<<",";
-            cout<<"}"<<",";
         }
         else
         {
             outfile<<"("<<",";
-            cout<<"("<<",";
-            storeBST(filename,ptr->left,ptr);
+            storeBST(outfile,ptr->left,ptr);
             outfile<<")"<<",";
-            cout<<")"<<",";
         }
     }
     else
     {
         return;
     }
-    outfile.close();
- 
-   
 }
 
 	
@@ -780,7 +771,7 @@ void BST::getBST(const string& prefix,  bool isLeft=false)
         result.push_back(isLeft ? "|--" : "|__" );
 
         // print the value of the node
-        result.push_back(root->JourneyCode + "\n");
+        result.push_back(to_string(root->JourneyCode) + "\n");
         TreeNode *curr = root;
         root = root->left;
         // enter the next tree level - left and right branch

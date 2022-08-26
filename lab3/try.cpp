@@ -21,11 +21,11 @@ void split (string str, char seperator)
 }  
 
 int main(){
-	int i,j,k,N,t;
+        int j,k,N;
 		cout<<"Enter the number of Nodes, you'd like to have?";
 		cin>>N;
 		BST *b1 = new BST();
-		for(i = 0;i<N;i++){
+		for(int i = 0;i<N;i++){
 				cin>>j>>k;
                 b1->insert(j,k);
 		}
