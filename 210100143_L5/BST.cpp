@@ -26,21 +26,21 @@ bool BST::insert(int jrnyCode, int price)
   
   // We use "return true" below to enable compilation.  Change this as you
   // see fit.
-
-  TreeNode node = TreeNode(jrnyCode,price);
- if(find(jrnyCode)) //Returns false if JourneyCode already present
+TreeNode* node = new TreeNode(jrnyCode,price);
+ if(find(jrnyCode)==1) //Returns false if JourneyCode already present
     {
         return false;  
     }
     if(root==NULL) //For empty tree, initializes root
     {
-        root = &node;
+        root = node;
+        return true;
     }
     TreeNode* ptr_parent=NULL;
     TreeNode* ptr=root;
     while(ptr!=NULL) // General insertion at the leaves
     {
-        if(*ptr<node) // Finds the leaf to insert at
+        if(BSTLessThan(ptr,node)) // Finds the leaf to insert at
         {  
             ptr_parent=ptr;
             ptr = ptr->right;
@@ -53,20 +53,21 @@ bool BST::insert(int jrnyCode, int price)
             continue;
         }
     }
-    if(node<*ptr_parent) // Checks whether to insert as left or right child
+    if(BSTLessThan(node,ptr_parent)) // Checks whether to insert as left or right child
     {
-        ptr_parent->left=&node;
-        ptr_parent->left->parent=ptr_parent;
+        updateBSTParentChild(node,ptr_parent,true);
     }
     else
     {
-        ptr_parent->right= &node;
-        ptr_parent->right->parent=ptr_parent;
+        updateBSTParentChild(node,ptr_parent,false);
     }
 
-    ptr=&node;
-    ptr_parent=node.parent;
+    // After the node is insersted 
+    // Backtrace the path to the root updating the values of height at each node
+    ptr=node;
+    ptr_parent=node->parent;
 
+    // Back traces till ptr reaches root
     while(ptr_parent != NULL)
     {
       if(ptr_parent->left==ptr)
@@ -105,6 +106,8 @@ bool BST::insert(int jrnyCode, int price)
           }
         }
       }
+      ptr=ptr_parent;
+      ptr_parent=ptr_parent->parent;
     }
 
 
@@ -128,8 +131,15 @@ int BST::find(int jrnyCode)
 
   // We use "return -1" below to enable compilation.  Change this as you
   // see fit.
-  TreeNode node = TreeNode(jrnyCode,0);
-  return findjourney(&node,root);
+  TreeNode* node = new TreeNode(jrnyCode,0); // Creates a new TreeNode which will be used as the object to search using BSTlessThan
+  if(findjourney(node,root))  // Searches for node starting at root
+  {
+    return 1; // Returns 1 if found
+  }
+  else
+  {
+    return -1; // Returns -1 if not found
+  }
 }
 
 //Function for recursion to find JourneyCode
@@ -139,17 +149,17 @@ bool BST::findjourney(TreeNode* comp,TreeNode* ptr)
     {
         return false;
     }
-    if(comp->getJourneyCode()==ptr->getJourneyCode()) // Checks at the pointer, returns true if found
+    if(BSTLessThan(comp,ptr)) // Uses BSTlessThan. If journey code of comp is less than that of pointer, searches left branch of tree
     {
-        return true;
+      return findjourney(comp,ptr->left);
     }
-    else if(comp->operator<(*ptr))
+    else if(BSTLessThan(ptr,comp)) // Uses BSTlessThan. If journey code of comp is more than that of pointer, searches right branch of tree
     {
-      return findjourney(comp,comp->left);
+      return findjourney(comp,ptr->right);
     }
-    else
+    else // If comp is neither smaller nor greater then it must be equal. Returns true.
     {
-      return findjourney(comp,comp->right);
+      return true;
     }
 }
 

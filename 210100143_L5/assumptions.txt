@@ -1,0 +1,1 @@
+Assumed that the case when the greatgrandparent is null has not been handeled by the boiler plate code and added functionality for checking and handling it.
