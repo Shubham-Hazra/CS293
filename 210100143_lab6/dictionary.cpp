@@ -34,7 +34,9 @@ int Dictionary<T>::hashValue(string key){
   int hashValue = 0;
   int x = 33;
   for(int i = size - 1; i >= 0; i--){
-    int val = key.at(i) - 'a';
+    // Edit version 1: Changed the way val is calculated
+    int val = (int)(key.at(i));
+    // End edit version 1
     hashValue = (val + x * hashValue) % N;
   }
   return hashValue;

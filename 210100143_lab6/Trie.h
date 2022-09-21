@@ -12,8 +12,9 @@ using namespace std;
 class TrieNode {
  public:
   bool isWord;
-  listOfObjects<int> *indices; // Indices in stnNameToIndex dictionary;
-                              // non-null only if isWord is true
+  listOfObjects<int> *indices; // Indices in stnNameToIndex (also referred
+                               // to as nameDict in the Trie class) dictionary;
+                               // non-null only if isWord is true
   int numNonNullBranches;
   TrieNode *branch[NUM_CHARS];
 
@@ -58,6 +59,8 @@ class Trie {
   bool del(string wordInName, string name);
   listOfObjects<string> *completions(string prefix);
   bool isPresent(string wordInName);
+  void printTrie();
+  void recursivePrintTrie(TrieNode *node, const string& prefix, int branchId, bool siblingsToRight);
 };
 
 #endif

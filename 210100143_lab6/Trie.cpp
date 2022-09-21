@@ -137,6 +137,7 @@ bool Trie::del(string wordInName, string name) {
     else
     {
       TrieNode *curr_node = root;
+      int wordcount;
       for(int i=0;i<len;i++)
       {
         int val = ('a' <= wordInName[i])?(int(wordInName[i])-97):(int(wordInName[i])-65);
@@ -150,7 +151,11 @@ bool Trie::del(string wordInName, string name) {
         }
         if(count == 1)
         {
-          continue;
+          if(curr_node->isWord == true)
+          {
+            lastBranchNode = curr_node;
+            lastBranchChar = val;
+          }
         }
         else
         {
@@ -158,9 +163,15 @@ bool Trie::del(string wordInName, string name) {
           lastBranchChar = val;
         }
         curr_node = curr_node->branch[val];
-        cout<<val<<" ";
       }
-      lastBranchNode->branch[lastBranchChar] = NULL;
+      if(wordcount>1)
+      {
+        lastBranchNode->branch[lastBranchChar] = NULL;
+      }
+      else
+      {
+        lastBranchNode->branch[lastBranchChar] = NULL;
+      }
     }
   }
   else
@@ -195,8 +206,16 @@ listOfObjects<string> * Trie::completions(string prefix) {
   listOfObjects<string> *currCompletions = NULL;
   for(int i=0;i<len;i++)
   {
+    if(currNode == NULL)
+    {
+      break;
+    }
     int val = ('a' <=prefix[i])?(int(prefix[i])-97):(int(prefix[i])-65);
     currNode = currNode->branch[val];
+  }
+  if(currNode == NULL)
+  {
+    return NULL;
   }
   currCompletions = recursiveAddCompletions(currNode,currCompletions);
   return currCompletions;
@@ -305,5 +324,56 @@ bool Trie::isPresent(string wordInName) {
   
 }
 
+// Edit version 1: Added printTrie and recursivePrintTrie functions
+// to help in debugging
+
+void Trie::printTrie()
+{
+  recursivePrintTrie(root, "", -1, false);
+}
+
+// Adapted from Adrian Schneider's code on StackOverflow
+// Basically a variation of the function we've been using
+// print binary search trees in previous labs
+
+void Trie::recursivePrintTrie(TrieNode *node, const string& prefix, int branchId, bool siblingsToRight)
+{
+  if (node != nullptr) {
+    cout << prefix;
+    
+    cout << ((branchId == 0) ? "|-" : (branchId == -1)? " *":"|_" ) << (char) ((branchId != -1) ? 'A'+branchId: '*');
+    cout << ((branchId == 0) ? '-' : (branchId == -1) ? '*':'_');
+    
+    // If this trie node has isWord set to true, print "(isWord)" and
+    // also the list of complete station names (accessed through indices
+    // in nameDict) associated with this trie node.
+    if (node->isWord) {
+      cout << "(isWord)";
+      listOfObjects<int> *currIndices = node->indices;
+      while (currIndices != nullptr) {
+	cout << endl << prefix << "     " << nameDict->getKeyAtIndex(currIndices->object);
+	currIndices = currIndices->next;
+      }
+    }
+    else {
+      cout << "()";
+    }
+    cout << endl;
+    for (int i = 0; i < NUM_CHARS; i++) {
+      TrieNode *currNode = node->branch[i];
+      bool childrenToRight = false;
+      for (int j = i+1; j < NUM_CHARS; j++) {
+	if (node->branch[j] != nullptr) {
+	  childrenToRight = true;
+	  break;
+	}
+      }
+      if (currNode != nullptr) {
+	recursivePrintTrie(currNode, prefix + ((siblingsToRight) ? "│   " : "    "), i, childrenToRight);
+      }
+    }
+  }
+}
+// End edit version 1
 
 #endif

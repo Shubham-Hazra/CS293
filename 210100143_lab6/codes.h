@@ -17,13 +17,24 @@
 #define ADMIN_DELETE_JOURNEY_CODE 22
 #define ADMIN_READ_FROM_FILE 3
 #define ADMIN_EXIT_READ_FROM_FILE 4
+// Edit version 1: Added the following code
+#define ADMIN_PRINT_TRIE 5
+// End edit version 1
 
 #define USER_EXIT 100
 #define USER_ENTER_DELETE_REVIEW 110
 #define USER_ENTER_REVIEW 111
 #define USER_DELETE_REVIEW 112
 #define USER_FIND_JOURNEYS 120
+// Edit version 1: Added the following two codes
+#define USER_READ_FROM_FILE 130
+#define USER_EXIT_READ_FROM_FILE 140
+// End edit version 1
 
 #define RESET "\033[0m"
 #define GREEN "\033[32m"
+// Edit version 1: Added the code for printing ASCII text in red and blue
+#define RED "\033[31m"
+#define BLUE "\033[34m"
+// End edit version 1
 #endif

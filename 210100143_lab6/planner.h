@@ -29,6 +29,9 @@ class Planner {
   inline int getUserLevel(int userCode);
   int getInt(bool readFrmFile, fstream *file);
   string getStringWithSpaces(bool readFrmFile, fstream *file);
+  // Edit version 1: Adding the following useful function
+  string getStringWithoutSpaces(bool readFrmFile, fstream *file);
+  // End edit version 1
   bool doAdminJob();
   bool doUserJob();
   listOfObjects<string> *findAllWords(string text);
@@ -44,7 +47,12 @@ class Planner {
   listOfObjects<JourneyCodeReview> *findJCodeReviews(string srcStnName, string dstStnName);
   inline void printWithHighlight(string text, int startHLight, int lenHLight);
 
-  string chooseFromCompletions(string prefix);
+  // Edit version 1: Changed signature of function chooseFromCompletions.
+  //  Also added one more helper function, trimByMatchingSubWords
+  string chooseFromCompletions(listOfObjects<string> *completions);
+  void trimByMatchingSubWords(listOfObjects<string> * &completions, listOfObjects<string> *listOfSubWords);
+  // End edit version 1
+  
   int *computeHMatrixForKMP(string keywordString);
   int KMPMatch(string text, int *hMatrix, string pattern);
   
