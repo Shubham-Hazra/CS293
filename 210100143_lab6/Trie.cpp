@@ -189,6 +189,7 @@ bool Trie::del(string wordInName, string name) {
         {
           break;
         }
+        index_ptr = index_ptr->next;
       }
       index_ptr->next = index_ptr->next->next;
     }
