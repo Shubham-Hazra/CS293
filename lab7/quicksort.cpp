@@ -92,7 +92,8 @@ int getday(TrainInfoPerStation *t);
 
 void swap(listOfObjects<TrainInfoPerStation *> *a, listOfObjects<TrainInfoPerStation *> *b)
 {
-	TrainInfoPerStation *temp = a->object;
+	static TrainInfoPerStation *temp;
+	temp = a->object;
 	a->object = b->object;
 	b->object = temp;
 }
@@ -211,7 +212,7 @@ listOfObjects<TrainInfoPerStation *> *pivot_chooser(listOfObjects<TrainInfoPerSt
 	{
 		steps = rand() % (K + 1);
 	}
-	listOfObjects<TrainInfoPerStation *> *ptr;
+	static listOfObjects<TrainInfoPerStation *> *ptr;
 	ptr = arr[index];
 	// ptr = stnInfoList;
 	// steps = start_index + rand() % (end_index - start_index + 1);
@@ -303,7 +304,8 @@ void Planner::QuicksortSimple(listOfObjects<TrainInfoPerStation *> *stnInfoList,
 	{
 		tail = tail->next;
 	}
-	listOfObjects<TrainInfoPerStation *> *ptr2 = tail;
+	static listOfObjects<TrainInfoPerStation *> *ptr2;
+	ptr2 = tail;
 	quickSort(arr, stnInfoList, ptr, tail, true);
 	tail = ptr;
 	for (int i = 0; i < 7; i++)
