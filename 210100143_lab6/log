@@ -1,6 +1,4 @@
 Executing "Read commands from file" 
-Failed
-Executing "Read commands from file" 
 Success
 Executing "Enter/delete station name"
 Executing "Enter station name"
@@ -45,8 +43,10 @@ Executing "Exit reading commands from file"
 Success
 Executing "Enter/delete station name"
 Executing "Delete station name"
-Successfully deleted "MUMBAI" (for station name "LOKMANYA TILAK TERMINUS MUMBAI") in trie
-Successfully deleted "TERMINUS" (for station name "LOKMANYA TILAK TERMINUS MUMBAI") in trie
-Successfully deleted "TILAK" (for station name "LOKMANYA TILAK TERMINUS MUMBAI") in trie
-Successfully deleted "LOKMANYA" (for station name "LOKMANYA TILAK TERMINUS MUMBAI") in trie
+Successfully deleted "JUNCTION" (for station name "THANE JUNCTION") in trie
+Successfully deleted "THANE" (for station name "THANE JUNCTION") in trie
 Success
+Executing "Enter/delete station name"
+Executing "Delete station name"
+Successfully deleted "CANTONMENT" (for station name "PUNE CANTONMENT") in trie
+Successfully deleted "PUNE" (for station name "PUNE CANTONMENT") in trie

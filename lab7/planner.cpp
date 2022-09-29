@@ -88,8 +88,12 @@ bool Planner::doAdminJob() {
       // Also added printing of the string "Input: " before the
       // user types in an input
       cout << "  5. Print trie of station names" << endl;
+      // Lab 7 specific
+      cout << "  6. Enter journey information" << endl;
+      // End lab 7 specific
       cout << endl << "Input: ";
       // End edit version 1
+
     }
     
     int option = getInt(readFrmFile, &inpFile);
@@ -299,7 +303,113 @@ bool Planner::doAdminJob() {
       case ADMIN_PRINT_TRIE:
 	stnNamesTrie->printTrie();
 	continue;
+
+      // Lab 7 specific
+      case ADMIN_ENTER_JOURNEY_INFO:
+	int stnIndex;
+	listOfObjects<TrainInfoPerStation *> *newTrainInfo;
+	TrainInfoPerStation *stnTrainInfo;
+	int depTime, arrTime, dayCount;
+	int len, numStops, journeyCode;
+	Entry<int> *stnEntry;
+	int daysOfWeek;
 	
+	if (!readFrmFile) {
+	  cout << "Enter journey code (train no.): ";
+	}
+	journeyCode = getInt(readFrmFile, &inpFile);
+
+	if (!readFrmFile) {
+	  cout << "Enter count of stops (including src and dest): ";
+	}
+	numStops = getInt(readFrmFile, &inpFile);
+
+	if (!readFrmFile) {
+	  cout << "Enter binary string of length 7 to denote days of week when train leaves source station: ";
+	}
+	daysOfWeek = getInt(readFrmFile, &inpFile);
+	// len = daysOfWeek.length();
+	// if (len != 7) {
+	//   logFile << "Incorrect format for specifying days of week when train leaves source station" << endl;
+	//   cout << "Incorrect format for specifying days of week when train leaves source station" << endl;
+	//   break;
+	// }
+	
+	for (int i=0; i < numStops; i++) {
+	  if (!readFrmFile) {
+	    cout << "Enter full station name: ";
+	  }
+	  string stnName = getStringWithSpaces(readFrmFile, &inpFile);
+	  stnEntry = stnNameToIndex.get(stnName);
+	  if (stnEntry == nullptr) {
+	    logFile << "Couldn't find station " << stnName << " in stnNameToIndex dictionary." << endl;
+	    cerr << "Couldn't find station " << stnName << " in stnNameToIndex dictionary." << endl;
+	    continue;
+	  }
+	  else {
+	    stnIndex = stnEntry->value;
+	  }
+
+	  if (!readFrmFile) {
+	    cout << "Enter day count, arrival and departure times (-1 if not applicable): ";
+	  }
+	  dayCount = getInt(readFrmFile, &inpFile);
+	  if ((i == 0) && (dayCount != 1)) {
+	    cerr << "Source station must have day count 1; setting it to 1" << endl;
+	    dayCount = 1;
+	  }
+	     
+	  arrTime = getInt(readFrmFile, &inpFile);
+	  if ((i == 0) && (arrTime != -1)) {
+	    cerr << "Source station must have arrival time -1; setting it to -1" << endl;
+	    arrTime = -1;
+	  }
+	  
+	  depTime = getInt(readFrmFile, &inpFile);
+	  if ((i == numStops-1) && (depTime != -1)) {
+	    cerr << "Final destination station must have departure time -1; setting it to -1" << endl;
+	    depTime = -1;
+	  }
+	  
+	  // Now fill in the train information per station
+	  stnTrainInfo = new TrainInfoPerStation(journeyCode, (unsigned short) i, arrTime, depTime);
+	  if (stnTrainInfo == nullptr) {
+	    logFile << "Memory allocation failure" << endl;
+	    cerr << "Memory allocation failure." << endl;
+	    continue;
+	  }
+
+	  int currDaysOfWeek = daysOfWeek;
+	  for (int j = 0; j < 7; j++) {
+	    if (currDaysOfWeek % 10 == 1) stnTrainInfo->setDayOfWeek(((6-j)+(dayCount-1))%7);
+	    else if (currDaysOfWeek % 10 == 0) stnTrainInfo->resetDayOfWeek(((6-j)+(dayCount-1))%7);
+	    else {
+	      logFile << "Incorrect days of week input" << endl;
+	      cerr << "Incorrect days of week input" << endl;
+	      break;
+	    }
+	    currDaysOfWeek = currDaysOfWeek/10;
+	  }
+	  newTrainInfo = new listOfObjects<TrainInfoPerStation *> (stnTrainInfo);
+	  if (newTrainInfo == nullptr) {
+	    logFile << "Memory allocation failure." << endl;
+	    cerr << "Memory allocation failure." << endl;
+	    continue;
+	  }
+	  
+	  if (stationInfo[stnIndex] == nullptr) {
+	    stationInfo[stnIndex] = newTrainInfo;
+	  }
+	  else {
+	    newTrainInfo->next = stationInfo[stnIndex];
+	    if (newTrainInfo->next != nullptr) {
+	      newTrainInfo->next->prev = newTrainInfo;
+	    }
+	    stationInfo[stnIndex] = newTrainInfo;
+	  }
+	}
+	continue;
+	// End lab 7 specific
       default:
 	logFile << "Invalid admin user option (" << option << ")" << endl;
 	cerr << "Invalid admin user option (" << option << ")" << endl;
@@ -354,6 +464,9 @@ bool Planner::doUserJob() {
       // Edit version 1: Added the following two user commands
       cout << "  130. Read commands from a file" << endl; 
       cout << "  140. Exit reading commands from a file" << endl;
+      // Lab 7 specific
+      cout << "  150. Find all journeys from station" << endl;
+      // End lab 7 specific
       // End edit version 1
       
       // Edit version 1: Added "Input: " to the output string
@@ -420,7 +533,9 @@ bool Planner::doUserJob() {
     }
     else {
       // End edit version 1
-      
+      string sStnName;
+      string sPartWords;	
+
       switch (option) {
       case USER_EXIT:
 	logFile << "Executing \"Exit normal user\"" << endl;
@@ -849,6 +964,54 @@ bool Planner::doUserJob() {
 	  }
 	}
 	break;
+
+      // Lab 7 specific
+      case USER_FIND_ALL_JOURNEYS_INFO:
+	
+	listOfObjects<string> *listOfWords, *completions;
+	Entry<int> *stnEntry;
+	int stnIndex;
+	
+	if (!readFrmFile) {
+	  cout << "Enter prefix of any word in station name: ";
+	}
+	sPartWords = getStringWithSpaces(readFrmFile, &inpFile);
+	listOfWords = findAllWords(sPartWords);
+	if (listOfWords != nullptr) {
+	  completions = stnNamesTrie->completions(listOfWords->object);
+	  listOfWords = listOfWords->next;
+	  trimByMatchingSubWords(completions, listOfWords);
+	  sStnName = chooseFromCompletions(completions);
+	}
+	    
+	if (sStnName != "") {
+	  logFile << "Chosen station: " << sStnName << endl;
+	  
+	  if (!readFrmFile) {
+	    cout << "Station: " << sStnName << endl;
+	  }
+	}
+	else {
+	  logFile << "Failure in choosing source station." << endl;
+	  cout << "Failure in choosing source station." << endl;
+	  continue;
+	}
+	
+	stnEntry = stnNameToIndex.get(sStnName);
+	if (stnEntry == nullptr) {
+	  logFile << "Couldn't find station " << sStnName << " in stnNameToIndex dictionary." << endl;
+	  cerr << "Couldn't find station " << sStnName << " in stnNameToIndex dictionary." << endl;
+	  continue;
+	}
+	else {
+	  stnIndex = stnEntry->value;
+	}
+
+	printStationInfo(stationInfo[stnIndex]);
+	
+	continue;
+	// End lab 7 specific
+	
       default:
 	logFile << "Invalid user option " << option << endl;
 	cout << "Invalid user option (" << option << "). Please try again." << endl;
@@ -1045,7 +1208,10 @@ void Planner::clearJCRMatrixEntry(int row, int col) {
     }
     delete toDeleteJCR;
   }
-  jCRMatrix[row][col]=NULL;
+
+  // Edit version 2: As pointed out by a student
+  jCRMatrix[row][col] = nullptr;
+  
   return;
 }
 
@@ -1346,13 +1512,18 @@ int Planner::addReview(int jCode, string srcStnName, string destStnName, string 
   if ((srcStnIndexEntry == nullptr) || (srcStnIndexEntry->value == -1)) {
     logFile << "Couldn't find " << srcStnName << " in stnNameToIndex dictionary" << endl;
     cout << "Couldn't find " << srcStnName << " in stnNameToIndex dictionary" << endl;
-    return false;
+
+    // Edit version 2: returning -1 instead of false
+    return -1;
+    // End edit version 2
   }
 
   if ((destStnIndexEntry == nullptr) || (destStnIndexEntry->value == -1)) {
     logFile << "Couldn't find " << destStnName << " in stnNameToIndex dictionary" << endl;
     cout << "Couldn't find " << destStnName << " in stnNameToIndex dictionary" << endl;
-    return false;
+    // Edit version 2: returning -1 instead of false
+    return -1;
+    // End edit version 2
   }
 
   srcStnIndex = srcStnIndexEntry->value;
@@ -1368,11 +1539,18 @@ int Planner::addReview(int jCode, string srcStnName, string destStnName, string 
       if (newRev == nullptr) {
 	logFile << "Memory allocation failure." << endl;
 	cout << "Memory allocation failure" << endl;
-	return false;
+
+	// Edit version 2: returning -1 instead of false
+	return -1;
+	// End edit version 2
       }
       newRev->next = currRev;
       (currJCRevEntry->object).reviews = newRev;
-      return true;
+
+      // Edit version 2: Returning lastReviewId instead of true
+      // return true;
+      return lastReviewId;
+      // End edit version 2
     }
     else {
       currJCRevEntry = currJCRevEntry->next;
@@ -1384,7 +1562,9 @@ int Planner::addReview(int jCode, string srcStnName, string destStnName, string 
   logFile << "Couldn't find journey code " << jCode << " for source " << srcStnName << " and destination " << destStnName << endl;
   cout << "Couldn't find journey code " << jCode << " for source " << srcStnName << " and destination " << destStnName << endl;
   
-  return false;
+  // Edit version 2: returning -1 instead of false
+  return -1;
+  // End edit version 2
 }
 
 bool Planner::delReview(int reviewId) {
@@ -1528,4 +1708,97 @@ void Planner::trimByMatchingSubWords(listOfObjects<string> * &completions, listO
   // By this time, completions has only the list of completions that match all subwords
 }
 // End edit version 1
+
+// Lab 7 specific
+void Planner::printStationInfo(listOfObjects<TrainInfoPerStation *> *stnInfoList)
+{
+  listOfObjects<TrainInfoPerStation *> *currList, *expandedList;
+  TrainInfoPerStation *currInfo;
+  string days[7] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+
+  // Expanding information in stnInfoList to get a list of train info
+  // in which each element of the list refers to a single day of the
+  // week.  This is the list that has to be finally sorted using
+  // quicksort.
+
+  currList = stnInfoList;
+  expandedList = nullptr;
+  int listLength = 0;
+  while (currList != nullptr) {
+    currInfo = currList->object;
+    if (currInfo != nullptr) {
+      // Make as many copies of currInfo as the total count of days in the week
+      // when this train runs from/to this station
+      int jCode = currInfo->journeyCode;
+      int stSeq = currInfo->stopSeq;
+      int arrTime = currInfo->arrTime;
+      int depTime = currInfo->depTime;
+    
+      for (int i=0; i < 7; i++) {
+	if (currInfo->daysOfWeek[i]) {
+	  TrainInfoPerStation *newExpandedElement = new TrainInfoPerStation(jCode, stSeq, arrTime, depTime);
+	  if (newExpandedElement == nullptr) {
+	    logFile << "Memory allocation failure." << endl;
+	    cerr << "Memory allocation failure." << endl;
+	    continue;
+	  }
+	  newExpandedElement->setDayOfWeek(i);
+
+	  listOfObjects<TrainInfoPerStation *> *newExpandedListElement = new listOfObjects<TrainInfoPerStation *> (newExpandedElement);
+	  if (newExpandedListElement == nullptr) {
+	    logFile << "Memory allocation failure." << endl;
+	    cerr << "Memory allocation failure." << endl;
+	    continue;
+	  }
+
+	  if (expandedList == nullptr) {
+	    expandedList = newExpandedListElement;
+	  }
+	  else {
+	    newExpandedListElement->next = expandedList;
+	    expandedList->prev = newExpandedListElement;
+	    expandedList = newExpandedListElement;
+	  }
+	  listLength++;
+	}
+      }
+    }
+    currList = currList->next;
+  }
+
+  Quicksort(expandedList);
+	//   QuicksortSimple(expandedList, 0, listLength-1);
+  
+  currList = expandedList;
+  while (currList != nullptr) {
+    currInfo = currList->object;
+    if (currInfo != nullptr) {
+      cout << GREEN << "Day(s): " << RESET;
+      for (int i=0; i<7; i++) {
+	if (currInfo->daysOfWeek[i]) cout << days[i] << " ";
+      }
+      cout << endl;
+      cout << BLUE << "JourneyCode: " << currInfo->journeyCode << RESET << "\t";
+      cout << RED << "Arr: " << RESET;
+      if (currInfo->arrTime == -1) {
+	cout << "Starts";
+      }
+      else {
+	cout << currInfo->arrTime;
+      }
+      cout << RED << " Dep: " << RESET;
+      if (currInfo->depTime == -1) {
+	cout << "Ends";
+      }
+      else {
+	cout << currInfo->depTime;
+      }
+      cout << endl;
+    }
+    currList = currList->next;
+  }
+  cout << endl;
+}
+
+// End lab 7 specific
 #endif
