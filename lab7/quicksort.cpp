@@ -90,6 +90,8 @@ int getday(TrainInfoPerStation *t);
 // Quicksort and QuicksortSimple potentially stand to gain some bonus
 // points.
 
+// Swap function to swap the values at two pointers.
+// Only changes the TrainInfoPerStation pointer values stored in the pointers and no the pointers itself
 void swap(listOfObjects<TrainInfoPerStation *> *a, listOfObjects<TrainInfoPerStation *> *b)
 {
 	static TrainInfoPerStation *temp;
@@ -98,6 +100,7 @@ void swap(listOfObjects<TrainInfoPerStation *> *a, listOfObjects<TrainInfoPerSta
 	b->object = temp;
 }
 
+// The main function call for Quicksort which calls the recursive quicksort
 void Planner::Quicksort(listOfObjects<TrainInfoPerStation *> *stnInfoList)
 {
 	srand(time(0));
@@ -186,6 +189,7 @@ void Planner::Quicksort(listOfObjects<TrainInfoPerStation *> *stnInfoList)
 	return;
 }
 
+// Pivot chooser which function which gets the pivot in O(K) time
 listOfObjects<TrainInfoPerStation *> *pivot_chooser(listOfObjects<TrainInfoPerStation *> **arr, listOfObjects<TrainInfoPerStation *> *stnInfoList, int start_index, int end_index, bool sortbyday)
 {
 	static int K = 4;
@@ -230,6 +234,7 @@ listOfObjects<TrainInfoPerStation *> *pivot_chooser(listOfObjects<TrainInfoPerSt
 
 void Planner::QuicksortSimple(listOfObjects<TrainInfoPerStation *> *stnInfoList, int start, int end)
 {
+	srand(time(0));
 	// // A few static variable declarations
 	// static int K = 4; // Parameter to be experimented with
 	// static int recursionLevel = -1; // This can be used to find out at which
@@ -262,7 +267,6 @@ void Planner::QuicksortSimple(listOfObjects<TrainInfoPerStation *> *stnInfoList,
 
 	// // Decrement recursion level before leaving the function
 	// recursionLevel--;
-
 	static int level = 0;
 	static int K = 4;
 	static listOfObjects<TrainInfoPerStation *> *ptr;
@@ -317,10 +321,11 @@ void Planner::QuicksortSimple(listOfObjects<TrainInfoPerStation *> *stnInfoList,
 		quickSort(arr, stnInfoList, ptr, tail, false);
 		ptr = tail->next;
 	}
-
+	level--;
 	return;
 }
 
+// Partition function which makes the partition according to the days
 listOfObjects<TrainInfoPerStation *> *partition_day(listOfObjects<TrainInfoPerStation *> **arr, listOfObjects<TrainInfoPerStation *> *stnInfoList, listOfObjects<TrainInfoPerStation *> *a, listOfObjects<TrainInfoPerStation *> *b)
 {
 	static listOfObjects<TrainInfoPerStation *> *pivot;
@@ -380,6 +385,7 @@ listOfObjects<TrainInfoPerStation *> *partition_day(listOfObjects<TrainInfoPerSt
 	return start;
 }
 
+// Partition function which makes the partition according to the time
 listOfObjects<TrainInfoPerStation *> *partition_time(listOfObjects<TrainInfoPerStation *> **arr, listOfObjects<TrainInfoPerStation *> *stnInfoList, listOfObjects<TrainInfoPerStation *> *a, listOfObjects<TrainInfoPerStation *> *b)
 {
 	static listOfObjects<TrainInfoPerStation *> *pivot;
@@ -413,7 +419,7 @@ listOfObjects<TrainInfoPerStation *> *partition_time(listOfObjects<TrainInfoPerS
 	swap(pivot, b);
 	while (end != b)
 	{
-		if (end->object->arrTime < b->object->arrTime)
+		if (end->object->depTime < b->object->depTime)
 		{
 			if (start == NULL)
 			{
@@ -439,6 +445,7 @@ listOfObjects<TrainInfoPerStation *> *partition_time(listOfObjects<TrainInfoPerS
 	return start;
 }
 
+// The recursive quicksort function which can sort according to day or time depending on the time
 void quickSort(listOfObjects<TrainInfoPerStation *> **arr, listOfObjects<TrainInfoPerStation *> *stnInfoList, listOfObjects<TrainInfoPerStation *> *start, listOfObjects<TrainInfoPerStation *> *end, bool sortbyday)
 {
 	if ((end != NULL) && (start != NULL) && (start != end) && (start != end->next))
@@ -459,6 +466,7 @@ void quickSort(listOfObjects<TrainInfoPerStation *> **arr, listOfObjects<TrainIn
 	}
 }
 
+// Function to get the day on which the train runs
 int getday(TrainInfoPerStation *t)
 {
 	for (int i = 0; i < 7; i++)
