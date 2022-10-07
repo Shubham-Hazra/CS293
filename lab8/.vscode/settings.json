@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "array": "cpp",
+        "fstream": "cpp",
+        "optional": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp",
+        "valarray": "cpp",
+        "variant": "cpp",
+        "ostream": "cpp",
+        "iostream": "cpp",
+        "*.tcc": "cpp",
+        "new": "cpp"
+    }
+}

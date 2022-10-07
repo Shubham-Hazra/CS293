@@ -419,7 +419,7 @@ listOfObjects<TrainInfoPerStation *> *partition_time(listOfObjects<TrainInfoPerS
 	swap(pivot, b);
 	while (end != b)
 	{
-		if (end->object->depTime < b->object->depTime)
+		if (end->object->arrTime < b->object->arrTime)
 		{
 			if (start == NULL)
 			{

@@ -2,6 +2,16 @@ Executing "Read commands from file"
 Success
 Executing "Enter/delete station name"
 Executing "Enter station name"
+Successfully inserted "CENTRAL" (for station name "AHMEDABAD CENTRAL") in trie
+Successfully inserted "AHMEDABAD" (for station name "AHMEDABAD CENTRAL") in trie
+Success
+Executing "Enter/delete station name"
+Executing "Enter station name"
+Successfully inserted "JUNCTION" (for station name "BHILAI JUNCTION") in trie
+Successfully inserted "BHILAI" (for station name "BHILAI JUNCTION") in trie
+Success
+Executing "Enter/delete station name"
+Executing "Enter station name"
 Successfully inserted "JUNCTION" (for station name "THANE JUNCTION") in trie
 Successfully inserted "THANE" (for station name "THANE JUNCTION") in trie
 Success
@@ -50,70 +60,9 @@ Successfully inserted "TERMINUS" (for station name "LOKMANYA TILAK TERMINUS MUMB
 Successfully inserted "TILAK" (for station name "LOKMANYA TILAK TERMINUS MUMBAI") in trie
 Successfully inserted "LOKMANYA" (for station name "LOKMANYA TILAK TERMINUS MUMBAI") in trie
 Success
-Executing "Enter/delete journey code"
-Executing "Enter journey code"
-Success
-Executing "Enter/delete journey code"
-Executing "Enter journey code"
-Success
-Executing "Enter/delete journey code"
-Executing "Enter journey code"
-Success
-Executing "Enter/delete journey code"
-Executing "Enter journey code"
-Success
-Executing "Enter/delete journey code"
-Executing "Enter journey code"
-Success
-Executing "Enter/delete journey code"
-Executing "Enter journey code"
-Success
 Executing "Exit reading commands from file" 
 Success
 Executing "Exit admin user"
-Chosen station: THANE JUNCTION
-Invalid user option 0
-Chosen station: LOKMANYA TILAK TERMINUS MUMBAI
-Chosen station: HOWRAH JUNCTION
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
-Invalid user option 32698
+Executing "Find direct journeys"
+Chosen source station: THANE JUNCTION
+Chosen destination station: PUNE CANTONMENT

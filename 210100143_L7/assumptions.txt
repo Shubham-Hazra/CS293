@@ -1,0 +1,6 @@
+I have sorted the trains first with respect to the days and then with 
+respect to the arrival times.
+2 trains arriving on the same day and same time can appear in any order, I am
+not orderering the trains on the basis of departure time for such cases.
+Also clarified by sir on piazza that trains can appear in any order in such
+a case.

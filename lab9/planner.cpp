@@ -17,29 +17,29 @@
 #include "codes.h"
 #endif
 
-// Edit version 1: Added COMMENT_START_CHAR to allow reading admin and
-// user inputs from file with comments.  The part of a line including
-// and after COMMENT_START_CHAR is ignored for interpreting the line.
+#ifndef HEAP_H
+#include "Heap.h"
+#endif
+
+#ifndef PRINT_JOURNEY_CPP
+#include "printJourney.cpp"
+#endif
+
 #define COMMENT_START_CHAR '$'
-// End edit version 1
 
 using namespace std;
 
-// Edit version 1: Adding some more color to the welcome message
 void Planner::displayWelcomeMessage() {
   cout << BLUE << "*********************************************************" << RESET << endl;
   cout << RED << "Welcome to the CS293 Travel Planner (Autumn 2022 version)" << RESET << endl;
   cout << BLUE << "*********************************************************" << RESET << endl;
   cout << endl;
 }
-// End edit version 1
 
 bool Planner::displayMenuAndAct() {
   int userCode;
 
-  // Edit version 1: Added "(0 to exit)" to help the user
   cout << "Enter user code (0 to exit): ";
-  // End edit version 1
   cin >> userCode;
   int userLevel = getUserLevel(userCode);
   
@@ -74,26 +74,16 @@ bool Planner::doAdminJob() {
   
   do {
     if (!readFrmFile) {
-      // Edit version 1: Added some extra couts for clarity
       cout << "****************************" << endl;
-      // End edit version 1
       cout << "Please choose an admin job:" << endl;
       cout << "  0. Exit admin user" << endl;
       cout << "  1. Enter/delete station name" << endl;
       cout << "  2. Enter/delete journey code" << endl;
       cout << "  3. Read commands from file" << endl;
       cout << "  4. Exit reading commands from file" << endl;
-
-      // Edit version 1: Added option to print trie of station names"Input: " to the output string
-      // Also added printing of the string "Input: " before the
-      // user types in an input
       cout << "  5. Print trie of station names" << endl;
-      // Lab 7 specific
       cout << "  6. Enter journey information" << endl;
-      // End lab 7 specific
       cout << endl << "Input: ";
-      // End edit version 1
-
     }
     
     int option = getInt(readFrmFile, &inpFile);
@@ -120,17 +110,13 @@ bool Planner::doAdminJob() {
       logFile << "Executing \"Read commands from file\" " << endl;
       logFile << "Ignoring ..." << endl;
 
-      // Edit version 1: Made the error message a bit explanatory
       cerr << "\"Read from file\" command encountered while already reading from file. Ignoring ..." << endl;
-      // End edit version 1
       continue;
     }
     else if (readFrmFile && (option == ADMIN_EXIT_READ_FROM_FILE)) {
       logFile << "Executing \"Exit reading commands from file\" " << endl;
 
-      // Edit version 1: Made the message a bit more explanatory
       cout << "Finished reading and executing commands from file" << endl;
-      // End edit version 1
       inpFile.close();
       if (!inpFile.is_open()) {
 	logFile << "Success" << endl;
@@ -171,16 +157,12 @@ bool Planner::doAdminJob() {
 	logFile << "Executing \"Enter/delete station name\"" << endl;
 	
 	if (!readFrmFile) {
-	  // Edit version 1: Added some extra couts for clarity
 	  cout << "****************************" << endl;
-	  // End edit version 1
 	  cout << "Entering/deleting station name. " << endl;
 	  cout << " Choose a sub-option:" << endl;
 	  cout << "  11. Enter new station name" << endl;
 	  cout << "  12. Delete station name" << endl;
-	  // Edit version 1: Added "Input: " to the output string
 	  cout << endl << "Input: ";
-	  // End edit version 1
 	}
 	
 	option = getInt(readFrmFile, &inpFile);
@@ -226,16 +208,12 @@ bool Planner::doAdminJob() {
 	logFile << "Executing \"Enter/delete journey code\"" << endl;
 
 	if (!readFrmFile) {
-	  // Edit version 1: Added some extra couts for clarity
 	  cout << "****************************" << endl;
-	  // End edit version 1
 	  cout << endl << "Entering/deleting journey code. ";
 	  cout << " Choose a sub-option:" << endl;
 	  cout << "  21. Enter a new journey code" << endl;
 	  cout << "  22. Delete a journey code" << endl;
-	  // Edit version 1: Added "Input: " to the output string
 	  cout << endl << "Input: ";
-	  // End edit version 1
 	}
 
 	option = getInt(readFrmFile, &inpFile);
@@ -246,11 +224,7 @@ bool Planner::doAdminJob() {
 	    cout << "Invalid sub-option (" << option << ")! Please try again." << endl;
 	    continue;
 	  }
-	  // Edit version 1: Closing an if branch.  This was incorrectly
-	  // closed in the original version
 	}
-	// End edit version 1
-	
 	else if (option == ADMIN_ENTER_JOURNEY_CODE) {
 	  logFile << "Executing \"Enter journey code\"" << endl;
 	  
@@ -304,7 +278,6 @@ bool Planner::doAdminJob() {
 	stnNamesTrie->printTrie();
 	continue;
 
-      // Lab 7 specific
       case ADMIN_ENTER_JOURNEY_INFO:
 	int stnIndex;
 	listOfObjects<TrainInfoPerStation *> *newTrainInfo;
@@ -313,6 +286,7 @@ bool Planner::doAdminJob() {
 	int len, numStops, journeyCode;
 	Entry<int> *stnEntry;
 	int daysOfWeek;
+	int *stnIndicesOfStops;
 	
 	if (!readFrmFile) {
 	  cout << "Enter journey code (train no.): ";
@@ -328,13 +302,12 @@ bool Planner::doAdminJob() {
 	  cout << "Enter binary string of length 7 to denote days of week when train leaves source station: ";
 	}
 	daysOfWeek = getInt(readFrmFile, &inpFile);
-	// len = daysOfWeek.length();
-	// if (len != 7) {
-	//   logFile << "Incorrect format for specifying days of week when train leaves source station" << endl;
-	//   cout << "Incorrect format for specifying days of week when train leaves source station" << endl;
-	//   break;
-	// }
-	
+
+	// Allocate an array to store stnIndex-es of stops along
+	// the journey
+
+	stnIndicesOfStops = new int[numStops];
+	 
 	for (int i=0; i < numStops; i++) {
 	  if (!readFrmFile) {
 	    cout << "Enter full station name: ";
@@ -348,6 +321,7 @@ bool Planner::doAdminJob() {
 	  }
 	  else {
 	    stnIndex = stnEntry->value;
+	    stnIndicesOfStops[i] = stnIndex;
 	  }
 
 	  if (!readFrmFile) {
@@ -370,6 +344,11 @@ bool Planner::doAdminJob() {
 	    cerr << "Final destination station must have departure time -1; setting it to -1" << endl;
 	    depTime = -1;
 	  }
+
+	  // Add journey code if not already added earlier
+	  for (int j = 0; j < i; j++) {
+	    addJourneyCode(stnNameToIndex.getKeyAtIndex(stnIndicesOfStops[j]), stnName, journeyCode);
+	  }
 	  
 	  // Now fill in the train information per station
 	  stnTrainInfo = new TrainInfoPerStation(journeyCode, (unsigned short) i, arrTime, depTime);
@@ -378,15 +357,17 @@ bool Planner::doAdminJob() {
 	    cerr << "Memory allocation failure." << endl;
 	    continue;
 	  }
+
+	  int currDaysOfWeek = daysOfWeek;
 	  for (int j = 0; j < 7; j++) {
-	    if (daysOfWeek % 10 == 1) stnTrainInfo->setDayOfWeek((j+(dayCount-1))%7);
-	    else if (daysOfWeek % 10 == 0) stnTrainInfo->resetDayOfWeek(j+(dayCount-1)%7);
+	    if (currDaysOfWeek % 10 == 1) stnTrainInfo->setDayOfWeek(((6-j)+(dayCount-1))%7);
+	    else if (currDaysOfWeek % 10 == 0) stnTrainInfo->resetDayOfWeek(((6-j)+(dayCount-1))%7);
 	    else {
 	      logFile << "Incorrect days of week input" << endl;
 	      cerr << "Incorrect days of week input" << endl;
-	      continue;
+	      break;
 	    }
-	      
+	    currDaysOfWeek = currDaysOfWeek/10;
 	  }
 	  newTrainInfo = new listOfObjects<TrainInfoPerStation *> (stnTrainInfo);
 	  if (newTrainInfo == nullptr) {
@@ -405,9 +386,168 @@ bool Planner::doAdminJob() {
 	    }
 	    stationInfo[stnIndex] = newTrainInfo;
 	  }
+
+	  // Now update the "to" and "from" adjacency lists
+	  
+	  if (i > 0) {
+	    // First updating "from" adjacency list of current station
+	    // i.e. station with index stnIndex
+	    
+	    listOfObjects<StationConnectionInfo *> *fromList = adjacency[stnIndex].fromStations;
+	    bool contFlag = true;
+	    while ((fromList != nullptr) && contFlag) {
+	      if (fromList->object != nullptr) {
+		
+		// Was fromStation, i.e. stn with index stnIndicesOfStops[j],
+		// already in fromList?
+		
+		if (fromList->object->adjacentStnIndex == stnIndicesOfStops[i-1]) {
+		  // Found fromStation in fromList.
+		  // Now check if journeyCode was already inserted earlier
+		  listOfObjects<TrainInfoPerStation *> *trains = fromList->object->trains;
+		  while (trains != nullptr) {
+		    if (trains->object != nullptr) {
+		      if (trains->object->journeyCode == journeyCode) {
+			// journeyCode was already inserted earlier
+			// So skip now
+			contFlag = false;
+			break;
+		      }
+		    }
+		    else {
+		      logFile << "Unexpected error: Found nullptr object in list" << endl;
+		      cout << "Unexpected error: Found nullptr object in list" << endl;
+		    }
+		    trains = trains->next;
+		  }
+		    
+		  // Didn't find journeyCode in fromList->object->trains
+		  // although fromStation was there in fromList
+		  // So add the current journey information to
+		  // fromList->object->trains
+		  
+		  listOfObjects<TrainInfoPerStation *> *newEntry = new listOfObjects<TrainInfoPerStation *> (stnTrainInfo);
+		  if (newEntry == nullptr) {
+		    logFile << "Memory allocation failure." << endl;
+		    cout << "Memory allocation failure." << endl;
+		  }
+		  else {
+		    newEntry->next = fromList->object->trains;
+		    if (newEntry->next != nullptr) {
+		      newEntry->next->prev = newEntry;
+		    }
+		    fromList->object->trains = newEntry;
+		  }
+		  contFlag = false;
+		  break;
+		}
+	      }
+	      else{
+		logFile << "Unexpected error: Found nullptr object in list" << endl;
+		cout << "Unexpected error: Found nullptr object in list" << endl;
+	      }
+	      fromList = fromList->next;
+	    }
+
+	    if (contFlag) {
+	      // fromStation, i.e. station with index j, is not
+	      // present in fromList.  So insert it now.
+	      
+	      StationConnectionInfo *newConn = new StationConnectionInfo(stnIndicesOfStops[i-1]);
+	      if (newConn == nullptr) {
+		logFile << "Memory allocation failure." << endl;
+		cout << "Memory allocation failure. Continuing ..." << endl;
+		continue;
+	      }	  
+	      else {
+		newConn->trains = new listOfObjects<TrainInfoPerStation *> (stnTrainInfo);
+		if (newConn->trains == nullptr) {
+		  logFile << "Memory allocation failure." << endl;
+		  cout << "Memory allocation failure. Continuing ..." << endl;
+		}	  
+	      }
+	    }
+
+	    // Next updating "to" adjacency list of fromstation
+	    // i.e. station with index stnIndicesOfStops[j]
+	    
+	    listOfObjects<StationConnectionInfo *> *toList = adjacency[stnIndicesOfStops[i-1]].toStations;
+	    contFlag = true;
+	    while ((toList != nullptr) && contFlag) {
+	      if (toList->object != nullptr) {
+		
+		// Was toStation, i.e. stn with index stnIndex,
+		// already in fromList?
+		
+		if (toList->object->adjacentStnIndex == stnIndex) {
+		  // Found toStation in toList.
+		  // Now check if journeyCode was already inserted earlier
+		  listOfObjects<TrainInfoPerStation *> *trains = toList->object->trains;
+		  while (trains != nullptr) {
+		    if (trains->object != nullptr) {
+		      if (trains->object->journeyCode == journeyCode) {
+			// journeyCode was already inserted earlier
+			// So skip now
+			contFlag = false;
+			break;
+		      }
+		    }
+		    else {
+		      logFile << "Unexpected error: Found nullptr object in list" << endl;
+		      cout << "Unexpected error: Found nullptr object in list" << endl;
+		    }
+		    trains = trains->next;
+		  }
+		  
+		  // Didn't find journeyCode in toList->object->trains
+		  // although toStation was there in toList
+		  // So add the current journey information to
+		  // toList->object->trains
+		  
+		  listOfObjects<TrainInfoPerStation *> *newEntry = new listOfObjects<TrainInfoPerStation *> (stnTrainInfo);
+		  if (newEntry == nullptr) {
+		    logFile << "Memory allocation failure." << endl;
+		    cout << "Memory allocation failure." << endl;
+		  }
+		  else {
+		    newEntry->next = toList->object->trains;
+		    if (newEntry->next != nullptr) {
+		      newEntry->next->prev = newEntry;
+		    }
+		    toList->object->trains = newEntry;
+		  }
+		  contFlag = false;
+		  break;
+		}
+	      }
+	      else{
+		logFile << "Unexpected error: Found nullptr object in list" << endl;
+		cout << "Unexpected error: Found nullptr object in list" << endl;
+	      }
+	      toList = toList->next;
+	    }
+	    
+	    if (contFlag) {
+	      // toStation, i.e. station with index stnIndex, is not
+	      // present in toList.  So insert it now.
+	      
+	      StationConnectionInfo *newConn = new StationConnectionInfo(stnIndex);
+	      if (newConn == nullptr) {
+		logFile << "Memory allocation failure." << endl;
+		cout << "Memory allocation failure. Continuing ..." << endl;
+		continue;
+	      }	  
+	      else {
+		newConn->trains = new listOfObjects<TrainInfoPerStation *> (stnTrainInfo);
+		if (newConn->trains == nullptr) {
+		  logFile << "Memory allocation failure." << endl;
+		  cout << "Memory allocation failure. Continuing ..." << endl;
+		}	  
+	      }
+	    }
+	  }
 	}
 	continue;
-	// End lab 7 specific
       default:
 	logFile << "Invalid admin user option (" << option << ")" << endl;
 	cerr << "Invalid admin user option (" << option << ")" << endl;
@@ -421,22 +561,20 @@ bool Planner::doAdminJob() {
 bool Planner::doUserJob() {
   int option;
   string srcStnName, destStnName;
-
-  // Edit version 1: Commenting the following declarations
-  // They are no longer needed.
-  // string srcPrefix, dstPrefix, tempPrefix;
-  // End edit version 1
-  
   string reviewString, keywordString;
-  int journeyCode, reviewId;
+  int journeyCode, reviewId, revRating, rateThresh;
   bool delReviewStatus;
   char filterChoice;
   int *hMatrix;
   listOfObjects<JourneyCodeReview> *listOfJCodeReviews, *currJCodeReview;
-  listOfObjects<string> *currReview;
+  listOfObjects<Review> *currReview;
   int matchStartIndex;
+  int maxRevsInARound = 10;
+  int numRevsInThisRound;
+  Review maxRateRev;
+  int contOption, numRevsInHeap;
+  bool contFlag;
   
-  // Edit version 1: Adding code to enable reading commands from a file
   string filterWord;
   string srcPartWords, destPartWords;
   listOfObjects<string> *listOfWords, *completions;
@@ -444,40 +582,21 @@ bool Planner::doUserJob() {
   
   string inpFileName = "";
   fstream inpFile;
-  // End edit version 1
   
   do {
-
-    // Edit version 1: Added some extra couts for clarity
-    // Also added condition to check if reading from file
     if (!readFrmFile) {
       cout << "****************************" << endl;
-      // End edit version 1
-
       cout << "Please choose a user job:" << endl;
       cout << "  100. Exit user" << endl;
       cout << "  110. Enter/delete review" << endl;
-      cout << "  120. Find journeys" << endl;
-
-      // Edit version 1: Added the following two user commands
+      cout << "  120. Find journey reviews" << endl;
       cout << "  130. Read commands from a file" << endl; 
       cout << "  140. Exit reading commands from a file" << endl;
-      // Lab 7 specific
       cout << "  150. Find all journeys from station" << endl;
-      // End lab 7 specific
-      // End edit version 1
-      
-      // Edit version 1: Added "Input: " to the output string
+      cout << "  160. Find direct journeys" << endl;
       cout << endl << "Input: ";
-      // End edit version 1
     }
 
-    // Edit version 1: Read either from cin or from inpFile
-    // Code to read and process commands from inpFile or
-    // to stop reading commands from inpFile, and revert to
-    // reading commands from cin
-    //
-    // cin >> option;
     option = getInt(readFrmFile, &inpFile);
     
     if (!readFrmFile && (option == USER_READ_FROM_FILE)) {
@@ -507,10 +626,8 @@ bool Planner::doUserJob() {
     }
     else if (readFrmFile && (option == USER_EXIT_READ_FROM_FILE)) {
       logFile << "Executing \"Exit reading commands from file\" " << endl;
-
-      // Edit version 1: Made the message a bit more explanatory
       cout << "Finished reading and executing commands from file" << endl;
-      // End edit version 1
+
       inpFile.close();
       if (!inpFile.is_open()) {
 	logFile << "Success" << endl;
@@ -530,8 +647,9 @@ bool Planner::doUserJob() {
       continue;
     }
     else {
-      // End edit version 1
-      
+      string sStnName;
+      string sPartWords;	
+
       switch (option) {
       case USER_EXIT:
 	logFile << "Executing \"Exit normal user\"" << endl;
@@ -543,29 +661,16 @@ bool Planner::doUserJob() {
       case USER_ENTER_DELETE_REVIEW:
 	logFile << "Executing \"Enter/delete review\"" << endl;
 	
-	// Edit version 1: Added some extra couts for clarity
-	// Also added a check on the flag readFrmFile
 	if (!readFrmFile) {
 	  cout << "****************************" << endl;
-	  // End edit version 1
-	  
 	  cout << "Entering/deleting station name. " << endl;
 	  cout << " Choose a sub-option:" << endl;
 	  cout << "  111. Enter new review" << endl;
 	  cout << "  112. Delete review" << endl;
-	  // Edit version 1: Added "Input: " to the output string
 	  cout << endl << "Input: ";
-	  // End edit version 1
-
-	  // Edit version 1: Closing the if (!readFrmFile) brace
 	}
-	// End edit version 1
-	
-	// Edit version 1: Changing "cin >> option" to a function call
-	// that either reads from cin or from an input file, as specified
-	// cin >> option;
+
 	option = getInt(readFrmFile, &inpFile);
-	// End edit version 1
 	
 	if ((option != USER_ENTER_REVIEW) && (option != USER_DELETE_REVIEW)) {
 	  logFile << "Invalid sub-option" << endl;
@@ -576,16 +681,10 @@ bool Planner::doUserJob() {
 	  if (option == USER_ENTER_REVIEW) {
 	    logFile << "Executing \"Enter review\"" << endl;
 	    
-	    // Edit version 1: Adding a check on readFrmFile flag
 	    if (!readFrmFile) {
 	      cout << "Enter prefix of any word in source station name: ";
 	    }
-	    // End edit version 1
 
-	    // Edit version 1: Changing "cin >> srcPrefix" followed by
-	    // "srcStnName = chooseFromCompletions(srcPrefix)" to the following sequence
-	    // of statements.  Note that this allows inputs to be read
-	    // either from cin or from an input file, as specified.
 	    // The following code also lets the user search for a set of completions
 	    // from a space separated list of prefixes of individual words that
 	    // appear in a station name.  E.g. giving "PU CANT" will return
@@ -599,16 +698,13 @@ bool Planner::doUserJob() {
 	      trimByMatchingSubWords(completions, listOfWords);
 	      srcStnName = chooseFromCompletions(completions);
 	    }
-	    // End edit version 1
 	    
 	    if (srcStnName != "") {
 	      logFile << "Chosen source station: " << srcStnName << endl;
 
-	      // Edit version 1: Adding a check on readFrmFile flag
 	      if (!readFrmFile) {
 		cout << "Chosen source station: " << srcStnName << endl;
 	      }
-	      // End edit version 1
 	    }
 	    else {
 	      logFile << "Failure in choosing source station." << endl;
@@ -616,16 +712,10 @@ bool Planner::doUserJob() {
 	      continue;
 	    }
 	    
-	    // Edit version 1: Adding a check on readFrmFile flag
 	    if (!readFrmFile) {
 	      cout << "Enter prefix of any word in destination station name: ";
 	    }
-	    // End edit version 1
 
-	    // Edit version 1: Changing "cin >> dstPrefix" followed by
-	    // "destStnName = chooseFromCompletions(destPrefix)" to the following sequence
-	    // of statements.  Note that this allows inputs to be read
-	    // either from cin or from an input file, as specified.
 	    // The following code also lets the user search for a set of completions
 	    // from a space separated list of prefixes of individual words that
 	    // appear in a station name.  E.g. giving "PU CANT" will return
@@ -639,16 +729,13 @@ bool Planner::doUserJob() {
 	      trimByMatchingSubWords(completions, listOfWords);
 	      destStnName = chooseFromCompletions(completions);
 	    }
-	    // End edit version 1
 
 	    if (destStnName != "") {
 	      logFile << "Chosen destination station: " << destStnName << endl;
 
-	      // Edit version 1: Adding a check on readFrmFile flag
 	      if (!readFrmFile) {
 		cout << "Chosen destination station: " << destStnName << endl;
 	      }
-	      // End edit version 1
 	    }
 	    else {
 	      logFile << "Failure in choosing destination station." << endl;
@@ -656,17 +743,11 @@ bool Planner::doUserJob() {
 	      continue;
 	    }
 
-	    // Edit version 1: Adding a check on readFrmFile flag
 	    if (!readFrmFile) {
 	      cout << "Enter journey code: ";
 	    }
-	    // End edit version 1
 
-	    // Edit version 1: Changing "cin >> journeyCode" to a function call
-	    // that either reads from cin or from an input file, as specified
-	    // cin >> journeyCode;
 	    journeyCode = getInt(readFrmFile, &inpFile);
-	    // End edit version 1
 	
 	    if (!checkValidJourneyCode(srcStnName, destStnName, journeyCode)) {
 	      logFile << "Journey Code doesn't match source and destination pair" << endl;
@@ -677,21 +758,17 @@ bool Planner::doUserJob() {
 	    else {
 	      logFile << "Journey code matches source and destination pair" << endl;
 
-	      // Edit version 1: Adding a check on readFrmFile flag
+	      if (!readFrmFile) {
+		cout << "Enter review rating: ";
+	      }
+	      revRating = getInt(readFrmFile, &inpFile);
+	      
 	      if (!readFrmFile) {
 		cout << "Enter short review without any line break:" << endl;
 	      }
-	      // End edit version 1
 
-	      // Edit version 1: Changed "cin >> reviewString" to a call to
-	      // getStringWithSpaces.  This allows reading from cin as well as
-	      // from inpFile, as specified.
-	      // cin >> reviewString;
-	      // if (getline(cin >> std::ws, reviewString)) {
 	      reviewString = getStringWithSpaces(readFrmFile, &inpFile);
 	      if (reviewString != "") {
-		// End edit version 1
-		
 		logFile << "Read review: " << reviewString << endl;
 	      }
 	      else {
@@ -700,15 +777,13 @@ bool Planner::doUserJob() {
 		continue;
 	      }
 	      
-	      reviewId = addReview(journeyCode, srcStnName, destStnName, reviewString);
-	      if (reviewId > 0) {
+	      reviewId = addReview(journeyCode, srcStnName, destStnName, reviewString, revRating);
+	      if (reviewId >= 0) {
 		logFile << "Successfully added review " << reviewId << endl;
 
-		// Edit version 1: Adding a check on readFrmFile flag
 		if (!readFrmFile) {
 		  cout << "Added review with review id " << reviewId << endl;
 		}
-		// End edit version 1
 	      }
 	      else {
 		logFile << "Failure in adding review" << endl;
@@ -720,28 +795,20 @@ bool Planner::doUserJob() {
 	  else { // option = USER_DELETE_REVIEW)
 	    logFile << "Executing \"Delete review\"" << endl;
 	    
-	    // Edit version 1: Adding a check on readFrmFile flag
 	    if (!readFrmFile) {
 	      cout << "Enter review id: " << endl;
 	    }
-	    // End edit version 1
-	    
-	    // Edit version 1: Changing "cin >> reviewId" to a function call
-	    // that either reads from cin or from an input file, as specified
-	    // cin >> reviewId;
+
 	    reviewId = getInt(readFrmFile, &inpFile);
-	    // End edit version 1
 	    
 	    if (reviewId > 0) {
 	      delReviewStatus = delReview(reviewId);
 	      if (delReviewStatus) {
 		logFile << "Successfully deleted review " << reviewId << endl;
 
-		// Edit version 1: Adding a check on readFrmFile flag
 		if (!readFrmFile) {
 		  cout << "Successfully deleted review " << reviewId << endl;
 		}
-		// End edit version 1
 	      }
 	      else {
 		logFile << "Failed to delete review." << endl;
@@ -759,16 +826,10 @@ bool Planner::doUserJob() {
       case USER_FIND_JOURNEYS:
 	logFile << "Executing \"Find journeys\"" << endl;
 	
-	// Edit version 1: Adding a check on readFrmFile flag
 	if (!readFrmFile) {
 	  cout << "Enter prefix of any word in source station name: ";
 	}
-	// End edit version 1
 	
-	// Edit version 1: Changing "cin >> srcPrefix" followed by
-	// "srcStnName = chooseFromCompletions(srcPrefix)" to the following sequence
-	// of statements.  Note that this allows inputs to be read
-	// either from cin or from an input file, as specified.
 	// The following code also lets the user search for a set of completions
 	// from a space separated list of prefixes of individual words that
 	// appear in a station name.  E.g. giving "PU CANT" will return
@@ -782,17 +843,12 @@ bool Planner::doUserJob() {
 	  trimByMatchingSubWords(completions, listOfWords);
 	  srcStnName = chooseFromCompletions(completions);
 	}
-	// End edit version 1
 
 	if (srcStnName != "") {
 	  logFile << "Chosen source station: " << srcStnName << endl;
-	  
-	  // Edit version 1: Adding a check on readFrmFile flag
 	  if (!readFrmFile) {
 	    cout << "Chosen source station: " << srcStnName << endl;
 	  }
-	  // End edit version 1
-	 
 	}
 	else {
 	  logFile << "Failure in choosing source station." << endl;
@@ -800,16 +856,10 @@ bool Planner::doUserJob() {
 	  continue;
 	}
 	
-	// Edit version 1: Adding a check on readFrmFile flag
 	if (!readFrmFile) {
 	  cout << "Enter prefix of any word in destination station name: ";
 	}
-	// End edit version 1
 
-	// Edit version 1: Changing "cin >> dstPrefix" followed by
-	// "destStnName = chooseFromCompletions(destPrefix)" to the following sequence
-	// of statements.  Note that this allows inputs to be read
-	// either from cin or from an input file, as specified.
 	// The following code also lets the user search for a set of completions
 	// from a space separated list of prefixes of individual words that
 	// appear in a station name.  E.g. giving "PU CANT" will return
@@ -823,16 +873,13 @@ bool Planner::doUserJob() {
 	  trimByMatchingSubWords(completions, listOfWords);
 	  destStnName = chooseFromCompletions(completions);
 	}
-	// End edit version 1
 
 	if (destStnName != "") {
 	  logFile << "Chosen destination station: " << destStnName << endl;
 	  
-	  // Edit version 1: Adding a check on readFrmFile flag
 	  if (!readFrmFile) {
 	    cout << "Chosen destination station: " << destStnName << endl;
 	  }
-	  // End edit version 1
 	}
 	else {
 	  logFile << "Failure in choosing destination station." << endl;
@@ -840,150 +887,177 @@ bool Planner::doUserJob() {
 	  continue;
 	}
 	
-	// Edit version 1: Adding a check on readFrmFile flag
 	if (!readFrmFile) {
-	  cout << "Do you want to filter reviews by keyword? (y/n) ";
+	  cout << "Enter choice: " << endl;
+	  cout << "  [k]. Filter reviews by keyword" << endl;
+	  cout << "  [r]. Filter some reviews by rating" << endl;
+	  cout << "  [n]. See all reviews (no filtering)" << endl;
 	}
-	// End edit version 1
 
-	// Edit version 1: Changing "cin >> filterChoice" to a function call
-	// that either from cin or from an input file, as specified
-	// cin >> filterChoice;
 	filterWord = getStringWithoutSpaces(readFrmFile, &inpFile);
 	filterChoice = filterWord[0];
-	// End edit version 1
 
-	if (filterChoice == 'y') {
-	  
-	  // Edit version 1: Adding a check on readFrmFile flag
+	if (filterChoice == 'k') {
 	  if (!readFrmFile) {
 	    cout << "Enter keyword (no line breaks): ";
 	  }
-	  // End edit version 1
 
-	  // Edit version 1: Changing "cin >> keywordString" to a function call
-	  // that either from cin or from an input file, as specified
-	  // cin >> keywordString;
 	  keywordString = getStringWithSpaces(readFrmFile, &inpFile);
-	  // End edit version 1
-	  
 	  logFile << "Filtering reviews by keyword " << keywordString << endl;
 	  hMatrix = computeHMatrixForKMP(keywordString);
 	}
-	else if (filterChoice == 'n') {
-	  logFile << "Not filtering reviews by keyword" << endl;
+	else if (filterChoice == 'r') {
+	  logFile << "Filtering reviews by rating" << endl;
 
-	  // Edit version 1: Adding a check on readFrmFile flag
+	  if (!readFrmFile) {
+	    cout << "Give min rating threshold: " << endl;
+	  }
+	  rateThresh = getInt(readFrmFile, &inpFile);
+	}
+	else if (filterChoice == 'n') {
+	  logFile << "Not filtering reviews" << endl;
+
 	  if (!readFrmFile) {
 	    cout << "Not filtering reviews by keyword" << endl;
 	  }
-	  // End edit version 1
 	  keywordString = "";
 	}
-	
+
 	listOfJCodeReviews = findJCodeReviews(srcStnName, destStnName);
 	if (listOfJCodeReviews == nullptr) {
 	  logFile << "Couldn't find list of journey codes and reviews." << endl;
 	  cout << "Couldn't find list of journey codes and reviews." << endl;
-	  // Edit version 1: Added a newline at the end of the next print statement
 	  cout << "Ignoring command" << endl;
-	  // End edit version 1
 	  continue;
 	}
 	else {
-	  currJCodeReview = listOfJCodeReviews;
-	  while (currJCodeReview != nullptr) {
-	    currReview = (currJCodeReview->object).reviews;
-	    
-	    // Edit version 1: Added a condition to print a message if there are no reviews yet
-	    if (currReview == nullptr) {
-	      logFile << "JCode: " << (currJCodeReview->object).jCode << " from " << srcStnName;
-	      logFile << " to " << destStnName << " has no reviews so far" << endl;
-	      cout << "JCode: " << (currJCodeReview->object).jCode << " from " << srcStnName;
-	      cout << " to " << destStnName << " has no reviews so far" << endl;
-	      currJCodeReview = currJCodeReview->next;
-	      continue;
-	    }
-	    
-	    // Also added printing of the journey code before the loop for printing reviews
-	    cout << endl << "===================" << endl;
-	    cout << "Journey Code " << (currJCodeReview->object).jCode << " reviews" << ((keywordString == "") ? "" : " matching keyword ") << GREEN << keywordString << RESET << ":" << endl;
-	    cout << "Source: " << srcStnName << ",   Destination: " << destStnName << endl << endl;
-	    
-	    // End edit version 1
-	  
-	    while (currReview != nullptr) {
-	      logFile << "JCode: " << (currJCodeReview->object).jCode << ", Rev: " << currReview->object << endl;
+	  if ((filterChoice == 'k') || (filterChoice == 'n')) {
+	    currJCodeReview = listOfJCodeReviews;
+	    while (currJCodeReview != nullptr) {
+	      currReview = (currJCodeReview->object).reviews;
 	      
-	      if (keywordString != "") {
-		matchStartIndex = KMPMatch(currReview->object, hMatrix, keywordString);
-		if (matchStartIndex != -1) {
-		  logFile << "Found keyword " << keywordString << endl;
-		  // Edit version 1: Commenting the following statements.  They have been
-		  // move before the loop iterating over reviews.
-		  // cout << "===================" << endl;
-		  // cout << "Journey Code: " << (currJCodeReview->object).jCode << endl;
-		  // End edit version 1
-		  printWithHighlight(currReview->object, matchStartIndex, keywordString.length());
-		  // Edit version 1: Commenting the printing of the double line boundary. This has now
-		  // bee moved to after the loop finishes iterating over reviews.
-		  //cout << endl << "===================" << endl;
-		  cout << endl;
-		  // End edit version 1
+	      if (currReview == nullptr) {
+		logFile << "JCode: " << (currJCodeReview->object).jCode << " from " << srcStnName;
+		logFile << " to " << destStnName << " has no reviews so far" << endl;
+		cout << "JCode: " << (currJCodeReview->object).jCode << " from " << srcStnName;
+		cout << " to " << destStnName << " has no reviews so far" << endl;
+		currJCodeReview = currJCodeReview->next;
+		continue;
+	      }
+	      
+	      // Also added printing of the journey code before the loop for printing reviews
+	      cout << endl << "===================" << endl;
+	      cout << "Journey Code " << (currJCodeReview->object).jCode << " reviews" << ((keywordString == "") ? "" : " matching keyword ") << GREEN << keywordString << RESET << ":" << endl;
+	      cout << "Source: " << srcStnName << ",   Destination: " << destStnName << endl << endl;
+	      
+	      while (currReview != nullptr) {
+		logFile << "JCode: " << (currJCodeReview->object).jCode << ", Rev: " << (currReview->object).rev << endl;
+		
+		if (keywordString != "") {
+		  matchStartIndex = KMPMatch((currReview->object).rev, hMatrix, keywordString);
+		  if (matchStartIndex != -1) {
+		    logFile << "Found keyword " << keywordString << endl;
+		    cout << "[Rate " << (currReview->object).rating << "] ";
+		    printWithHighlight((currReview->object).rev, matchStartIndex, keywordString.length());
+		    cout << endl;
+		  }
+		  else {
+		    logFile << "Didn't find keyword " << keywordString << endl;
+		  }
 		}
 		else {
-		  logFile << "Didn't find keyword " << keywordString << endl;
+		  logFile << "No keyword match required. Printing review." << endl;
+		  cout << "[Rate " << (currReview->object).rating << "] ";
+		  cout << (currReview->object).rev << endl;
+		  cout << currReview->object << endl;
 		}
+		
+		currReview = currReview->next;
 	      }
-	      else {
-		logFile << "No keyword match required. Printing review." << endl;
-		// Edit version 1: Commenting the following statements.  They have been
-		// move before the loop iterating over reviews.
-		// cout << "===================" << endl;
-		// cout << "Journey Code: " << (currJCodeReview->object).jCode << endl;
-		// End edit version 1
-		cout << currReview->object << endl;
-		// Edit version 1: Commenting the following statement.  It has been moved
-		// after the loop iterating over reviews
-		// cout << "===================" << endl;
-		// End edit version 1
-	      }
-	      
-	      currReview = currReview->next;
+	      cout << "===================" << endl << endl;
+	      currJCodeReview = currJCodeReview->next;
 	    }
-	    // Edit version 1: Moved printing of the separator line after the loop
-	    // for printing reviews.
-	    cout << "===================" << endl << endl;
-	    // End edit version 1
-	    
-	    currJCodeReview = currJCodeReview->next;
+	  }
+	  else if (filterChoice == 'r') {
+	    currJCodeReview = listOfJCodeReviews;
+	    numRevsInThisRound = 0;
+	    numRevsInHeap = 0;
+	    contFlag = true;
+	    // Edit for Lab 8
+	    Heap<Review> revHeap;
+	    // End edit for lab 8
+
+	    while ((currJCodeReview != nullptr) && (contFlag)) {
+	      currReview = (currJCodeReview->object).reviews;
+	      while ((currReview != nullptr) && (contFlag))  {
+		numRevsInThisRound++;
+		numRevsInHeap++;
+		revHeap.insert(currReview->object);
+		if ((currReview->next == nullptr) ||
+		    (numRevsInThisRound >= maxRevsInARound)) {
+		  maxRateRev = revHeap.getMax();
+
+		  while ((maxRateRev.rating >= rateThresh) && (numRevsInHeap > 0)) {
+		    cout << "JCode " << (currJCodeReview->object).jCode;
+		    cout << " [Rate " << maxRateRev.rating << "]: ";
+		    // Edit for Lab8
+		    cout << maxRateRev.rev << endl;
+		    // End edit for lab 8
+		    revHeap.delMax();
+		    numRevsInHeap--;
+		    if (numRevsInHeap > 0) {
+		      maxRateRev = revHeap.getMax();
+		    }
+		  }
+		  cout << "Continue with more reviews? 0/1: ";
+		  cin >> contOption;
+		  if (contOption == 1) {
+		    if (numRevsInThisRound >= maxRevsInARound) {
+		      numRevsInThisRound = 0;
+		    }
+		  }
+		  else {
+		    contFlag = false;
+		    continue;
+		  }
+		}
+		currReview = currReview->next;
+	      }
+	      if (contFlag) {
+		currJCodeReview = currJCodeReview->next;
+	      }
+	    }
+
+	    if (contFlag) {
+	      cout << "No more reviews for given source-destn!" << endl;
+	    }
 	  }
 	}
 	break;
 
-      // Lab 7 specific
       case USER_FIND_ALL_JOURNEYS_INFO:
 	
 	listOfObjects<string> *listOfWords, *completions;
+	Entry<int> *stnEntry;
+	int stnIndex;
 	
 	if (!readFrmFile) {
 	  cout << "Enter prefix of any word in station name: ";
 	}
-	string srcPartWords = getStringWithSpaces(readFrmFile, &inpFile);
-	string srcStnName;
-	listOfWords = findAllWords(srcPartWords);
+	sPartWords = getStringWithSpaces(readFrmFile, &inpFile);
+	listOfWords = findAllWords(sPartWords);
 	if (listOfWords != nullptr) {
 	  completions = stnNamesTrie->completions(listOfWords->object);
 	  listOfWords = listOfWords->next;
 	  trimByMatchingSubWords(completions, listOfWords);
-	  srcStnName = chooseFromCompletions(completions);
+	  sStnName = chooseFromCompletions(completions);
 	}
 	    
-	if (srcStnName != "") {
-	  logFile << "Chosen station: " << srcStnName << endl;
+	if (sStnName != "") {
+	  logFile << "Chosen station: " << sStnName << endl;
 	  
 	  if (!readFrmFile) {
-	    cout << "Chosen station: " << srcStnName << endl;
+	    cout << "Station: " << sStnName << endl;
 	  }
 	}
 	else {
@@ -992,10 +1066,10 @@ bool Planner::doUserJob() {
 	  continue;
 	}
 	
-	stnEntry = stnNameToIndex.get(srcStnName);
+	stnEntry = stnNameToIndex.get(sStnName);
 	if (stnEntry == nullptr) {
-	  logFile << "Couldn't find station " << srcStnName << " in stnNameToIndex dictionary." << endl;
-	  cerr << "Couldn't find station " << srcStnName << " in stnNameToIndex dictionary." << endl;
+	  logFile << "Couldn't find station " << sStnName << " in stnNameToIndex dictionary." << endl;
+	  cerr << "Couldn't find station " << sStnName << " in stnNameToIndex dictionary." << endl;
 	  continue;
 	}
 	else {
@@ -1005,22 +1079,73 @@ bool Planner::doUserJob() {
 	printStationInfo(stationInfo[stnIndex]);
 	
 	continue;
-	// End lab 7 specific
+
+      case USER_FIND_DIRECT_JOURNEYS:
+	logFile << "Executing \"Find direct journeys\"" << endl;
 	
+	if (!readFrmFile) {
+	  cout << "Enter prefix of any word in source station name: ";
+	}
+	
+	srcPartWords = getStringWithSpaces(readFrmFile, &inpFile);
+	listOfWords = findAllWords(srcPartWords);
+	if (listOfWords != nullptr) {
+	  completions = stnNamesTrie->completions(listOfWords->object);
+	  listOfWords = listOfWords->next;
+	  trimByMatchingSubWords(completions, listOfWords);
+	  srcStnName = chooseFromCompletions(completions);
+	}
+
+	if (srcStnName != "") {
+	  logFile << "Chosen source station: " << srcStnName << endl;
+	  if (!readFrmFile) {
+	    cout << "Chosen source station: " << srcStnName << endl;
+	  }
+	}
+	else {
+	  logFile << "Failure in choosing source station." << endl;
+	  cout << "Failure in choosing source station." << endl;
+	  continue;
+	}
+	
+	if (!readFrmFile) {
+	  cout << "Enter prefix of any word in destination station name: ";
+	}
+	
+	destPartWords = getStringWithSpaces(readFrmFile, &inpFile);
+	listOfWords = findAllWords(destPartWords);
+	if (listOfWords != nullptr) {
+	  completions = stnNamesTrie->completions(listOfWords->object);
+	  listOfWords = listOfWords->next;
+	  trimByMatchingSubWords(completions, listOfWords);
+	  destStnName = chooseFromCompletions(completions);
+	}
+
+	if (destStnName != "") {
+	  logFile << "Chosen destination station: " << destStnName << endl;
+	  
+	  if (!readFrmFile) {
+	    cout << "Chosen destination station: " << destStnName << endl;
+	  }
+	}
+	else {
+	  logFile << "Failure in choosing destination station." << endl;
+	  cout << "Failure in choosing destinatoin station." << endl;
+	  continue;
+	}
+	
+	printDirectJourneys(srcStnName, destStnName);
+	
+	continue;
       default:
 	logFile << "Invalid user option " << option << endl;
 	cout << "Invalid user option (" << option << "). Please try again." << endl;
 	continue;
       }
-      // Edit version 1: Closing the brace for the else branch -- when the command
-      // read in has to do nothing with reading or stopping reading commands from
-      // an input file
     }
-    // End edit version 1
   }  while (true);
 }
 
-// Edit version 1:
 // The following implementations of getInt and getStringWithSpaces
 // allow reading commands/inputs along with comments
 // on the same line, and then selecting the command/input for
@@ -1145,7 +1270,6 @@ inline string Planner::getStringWithoutSpaces(bool readFromFile, fstream *file) 
   inpStream >> value;
   return value;
 }
-// End edit version 1
 
 listOfObjects<string> * Planner::findAllWords(string text) {
   char *arrayOfChars = new char[text.length() + 1];
@@ -1195,9 +1319,9 @@ void Planner::clearJCRMatrixEntry(int row, int col) {
   while (currJCR != nullptr) {
     listOfObjects<JourneyCodeReview> *toDeleteJCR = currJCR;
     currJCR = currJCR->next;
-    listOfObjects<string> *currReview = (toDeleteJCR->object).reviews;
+    listOfObjects<Review> *currReview = (toDeleteJCR->object).reviews;
     while (currReview != nullptr) {
-      listOfObjects<string> *toDeleteReview = currReview;
+      listOfObjects<Review> *toDeleteReview = currReview;
       currReview = currReview->next;
       delete toDeleteReview;
     }
@@ -1260,9 +1384,6 @@ bool Planner::addStationName(string stnName) {
       }
       else {
 	logFile << "Successfully inserted \"" << currWord->object << "\" (for station name \"" << stnNameToIndex.getKeyAtIndex(freeIndex) << "\") in trie" << endl;
-	// Edit version 1: Commenting the following extraneous output
-	// cout << "Successfully inserted " << currWord->object << endl;
-	// End edit version 1
 	currWord = currWord->next;
       }
     }
@@ -1389,7 +1510,7 @@ bool Planner::addJourneyCode(string srcStnName, string destStnName, int jCode) {
 
   if (checkValidJourneyCode(srcStnName, destStnName, jCode)) {
     logFile << "Journey code already exists in system for given src, dest" << endl;
-    cout << "Journey code already exists in system for given src, dest" << endl;
+    // cout << "Journey code already exists in system for given src, dest" << endl;
     return true;
   }
 
@@ -1472,9 +1593,9 @@ bool Planner::delJourneyCode(string srcStnName, string destStnName, int jCode) {
     if ((currJCRevEntry->object).jCode == jCode) {
       // Delete all reviews for this src, dest, jCode combination
       // Can be improved
-      listOfObjects<string> *currRev = (currJCRevEntry->object).reviews;
+      listOfObjects<Review> *currRev = (currJCRevEntry->object).reviews;
       while (currRev != nullptr) {
-	listOfObjects<string> *toDeleteRev = currRev;
+	listOfObjects<Review> *toDeleteRev = currRev;
 	currRev = currRev->next;
 	delete toDeleteRev;
       }
@@ -1498,7 +1619,7 @@ bool Planner::delJourneyCode(string srcStnName, string destStnName, int jCode) {
   return true;
 }
 
-int Planner::addReview(int jCode, string srcStnName, string destStnName, string review) {
+int Planner::addReview(int jCode, string srcStnName, string destStnName, string review, int rating=0) {
   Entry<int> *srcStnIndexEntry = stnNameToIndex.get(srcStnName);
   Entry<int> *destStnIndexEntry = stnNameToIndex.get(destStnName);
 
@@ -1527,10 +1648,11 @@ int Planner::addReview(int jCode, string srcStnName, string destStnName, string 
   listOfObjects<JourneyCodeReview> *currJCRevEntry = jCRMatrix[srcStnIndex][destStnIndex];
   while (currJCRevEntry != nullptr) {
     if ((currJCRevEntry->object).jCode == jCode) {
-      listOfObjects<string> *currRev = (currJCRevEntry->object).reviews;
+      listOfObjects<Review> *currRev = (currJCRevEntry->object).reviews;
       lastReviewId++;
       string revWithId = "[" + to_string(lastReviewId) + "]: " +  review;
-      listOfObjects<string> *newRev = new listOfObjects<string> (revWithId);
+      Review newRevEntry(rating, lastReviewId, revWithId);
+      listOfObjects<Review> *newRev = new listOfObjects<Review> (newRevEntry);
       if (newRev == nullptr) {
 	logFile << "Memory allocation failure." << endl;
 	cout << "Memory allocation failure" << endl;
@@ -1611,20 +1733,10 @@ inline void Planner::printWithHighlight(string text, int startHLight, int lenHLi
   cout << suffix;
 }
 
-// Edit version 1: Changed signature of following function.
-// Also deleting/commenting the first two statements of the original
-// function. These statements are not needed any more.
 string Planner::chooseFromCompletions(listOfObjects<string> *completions) {
-  // int len = prefix.length();
-  // listOfObjects<string> *completions = stnNamesTrie->completions(prefix);
-  // End edit version 1
-  
   if (completions != nullptr) {
     if (completions->next == nullptr) {
       // Only one completion possible
-      // Edit version 1: Commenting the following extraneous output 
-	// cout << "Only completion: " << completions->object << endl;
-      // End ewdit version 1
       return (completions->object);
     }
     else {
@@ -1669,7 +1781,6 @@ string Planner::chooseFromCompletions(listOfObjects<string> *completions) {
   }
 }
 
-// Edit version 1: Adding one more helper function
 void Planner::trimByMatchingSubWords(listOfObjects<string> * &completions, listOfObjects<string> *listOfSubWords) {
   listOfObjects<string> *currCompletion, *prevCompletion, *currSubWord;
   listOfObjects<string> *toDeleteCompletion;
@@ -1702,32 +1813,95 @@ void Planner::trimByMatchingSubWords(listOfObjects<string> * &completions, listO
 
   // By this time, completions has only the list of completions that match all subwords
 }
-// End edit version 1
 
-// Lab 7 specific
-void printStationInfo(listOfObjects<TrainInfoPerStation *> *stnInfoList)
+void Planner::printStationInfo(listOfObjects<TrainInfoPerStation *> *stnInfoList)
 {
-  listOfObjects<TrainInfoPerStation *> *currList;
+  listOfObjects<TrainInfoPerStation *> *currList, *expandedList;
   TrainInfoPerStation *currInfo;
-  
-  // Quicksort(stnInfoList)
-  
+  string days[7] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+
+  // Expanding information in stnInfoList to get a list of train info
+  // in which each element of the list refers to a single day of the
+  // week.  This is the list that has to be finally sorted using
+  // quicksort.
+
   currList = stnInfoList;
-  while (currInfoList != nullptr) {
-    currInfo = currInfoList->object;
+  expandedList = nullptr;
+  int listLength = 0;
+  while (currList != nullptr) {
+    currInfo = currList->object;
     if (currInfo != nullptr) {
-      cout << "Journey code: " << currInfo->journeyCode << endl;
-      cout << "Days of week: ";
+      // Make as many copies of currInfo as the total count of days in the week
+      // when this train runs from/to this station
+      int jCode = currInfo->journeyCode;
+      int stSeq = currInfo->stopSeq;
+      int arrTime = currInfo->arrTime;
+      int depTime = currInfo->depTime;
+    
+      for (int i=0; i < 7; i++) {
+	if (currInfo->daysOfWeek[i]) {
+	  TrainInfoPerStation *newExpandedElement = new TrainInfoPerStation(jCode, stSeq, arrTime, depTime);
+	  if (newExpandedElement == nullptr) {
+	    logFile << "Memory allocation failure." << endl;
+	    cerr << "Memory allocation failure." << endl;
+	    continue;
+	  }
+	  newExpandedElement->setDayOfWeek(i);
+
+	  listOfObjects<TrainInfoPerStation *> *newExpandedListElement = new listOfObjects<TrainInfoPerStation *> (newExpandedElement);
+	  if (newExpandedListElement == nullptr) {
+	    logFile << "Memory allocation failure." << endl;
+	    cerr << "Memory allocation failure." << endl;
+	    continue;
+	  }
+
+	  if (expandedList == nullptr) {
+	    expandedList = newExpandedListElement;
+	  }
+	  else {
+	    newExpandedListElement->next = expandedList;
+	    expandedList->prev = newExpandedListElement;
+	    expandedList = newExpandedListElement;
+	  }
+	  listLength++;
+	}
+      }
+    }
+    currList = currList->next;
+  }
+
+  Quicksort(expandedList);
+  // QuicksortSimple(expandedList, 0, listLength-1);
+  
+  currList = expandedList;
+  while (currList != nullptr) {
+    currInfo = currList->object;
+    if (currInfo != nullptr) {
+      cout << GREEN << "Day(s): " << RESET;
       for (int i=0; i<7; i++) {
-	if (daysOfWeek[i]) cout << i+1 << " ";
+	if (currInfo->daysOfWeek[i]) cout << days[i] << " ";
       }
       cout << endl;
-      cout << "Arrival time: " << arrTime << endl;
-      cout << "Departure time: " << depTime << endl;
-      cout << endl << endl;
+      cout << BLUE << "JourneyCode: " << currInfo->journeyCode << RESET << "\t";
+      cout << RED << "Arr: " << RESET;
+      if (currInfo->arrTime == -1) {
+	cout << "Starts";
+      }
+      else {
+	cout << currInfo->arrTime;
+      }
+      cout << RED << " Dep: " << RESET;
+      if (currInfo->depTime == -1) {
+	cout << "Ends";
+      }
+      else {
+	cout << currInfo->depTime;
+      }
+      cout << endl;
     }
+    currList = currList->next;
   }
+  cout << endl;
 }
 
-// End lab 7 specific
 #endif
