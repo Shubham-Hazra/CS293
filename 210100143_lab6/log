@@ -41,12 +41,126 @@ Executing "Enter journey code"
 Success
 Executing "Exit reading commands from file" 
 Success
-Executing "Enter/delete station name"
-Executing "Delete station name"
-Successfully deleted "JUNCTION" (for station name "THANE JUNCTION") in trie
-Successfully deleted "THANE" (for station name "THANE JUNCTION") in trie
+Executing "Exit admin user"
+Executing "Read commands from file" 
 Success
-Executing "Enter/delete station name"
-Executing "Delete station name"
-Successfully deleted "CANTONMENT" (for station name "PUNE CANTONMENT") in trie
-Successfully deleted "PUNE" (for station name "PUNE CANTONMENT") in trie
+Executing "Enter/delete review"
+Executing "Enter review"
+Chosen source station: THANE JUNCTION
+Chosen destination station: PUNE CANTONMENT
+Journey code matches source and destination pair
+Read review: Good journey. Will travel again!
+Successfully added review 1
+Executing "Enter/delete review"
+Executing "Enter review"
+Chosen source station: THANE JUNCTION
+Chosen destination station: PUNE CANTONMENT
+Journey code matches source and destination pair
+Read review: Terrible journey. Will not travel again by this train!
+Successfully added review 1
+Executing "Enter/delete review"
+Executing "Enter review"
+Chosen source station: THANE JUNCTION
+Chosen destination station: PUNE CANTONMENT
+Journey code matches source and destination pair
+Read review: Enjoyable journey with beautiful views ...
+Successfully added review 1
+Executing "Enter/delete review"
+Executing "Enter review"
+Chosen source station: MUMBAI CENTRAL
+Chosen destination station: PUNE CANTONMENT
+Journey code matches source and destination pair
+Read review: Excellent journey. Well worth the ticket price!
+Successfully added review 1
+Executing "Enter/delete review"
+Executing "Enter review"
+Chosen source station: MUMBAI CENTRAL
+Chosen destination station: PUNE CANTONMENT
+Journey code matches source and destination pair
+Read review: So-so journey. Undecided whether to recommend this to others.
+Successfully added review 1
+Executing "Enter/delete review"
+Executing "Enter review"
+Chosen source station: LOKMANYA TILAK TERMINUS MUMBAI
+Chosen destination station: PUNE CANTONMENT
+Journey code matches source and destination pair
+Read review: Terrible journey. There were rats all over the compartment :-(
+Successfully added review 1
+Executing "Enter/delete review"
+Executing "Enter review"
+Chosen source station: LOKMANYA TILAK TERMINUS MUMBAI
+Chosen destination station: PUNE CANTONMENT
+Journey code matches source and destination pair
+Read review: Forgettable journey. Very unclean train and rude staff.
+Successfully added review 1
+Executing "Enter/delete review"
+Executing "Enter review"
+Chosen source station: LOKMANYA TILAK TERMINUS MUMBAI
+Chosen destination station: PUNE CANTONMENT
+Journey code matches source and destination pair
+Read review: Hopeless journey. Very unclean train and rude staff.
+Successfully added review 1
+Executing "Exit reading commands from file" 
+Success
+Executing "Find journeys"
+Chosen source station: THANE JUNCTION
+Chosen destination station: PUNE CANTONMENT
+Not filtering reviews by keyword
+JCode: 280, Rev: [2]: Enjoyable journey with beautiful views ...
+No keyword match required. Printing review.
+JCode: 280, Rev: [1]: Terrible journey. Will not travel again by this train!
+No keyword match required. Printing review.
+JCode: 280, Rev: [0]: Good journey. Will travel again!
+No keyword match required. Printing review.
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845
+Invalid user option 21845

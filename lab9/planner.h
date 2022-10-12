@@ -15,8 +15,9 @@
 
 using namespace std;
 
-class Planner {
- private:
+class Planner
+{
+private:
   int numStations;
   int numJCodeSrcDestn;
   int lastReviewId;
@@ -27,7 +28,6 @@ class Planner {
   Dictionary<int> stnNameToIndex;
   listOfObjects<JourneyCodeReview> *jCRMatrix[DICT_SIZE][DICT_SIZE];
   Trie *stnNamesTrie;
-
   inline int getUserLevel(int userCode);
   int getInt(bool readFrmFile, fstream *file);
   string getStringWithSpaces(bool readFrmFile, fstream *file);
@@ -46,33 +46,39 @@ class Planner {
   listOfObjects<JourneyCodeReview> *findJCodeReviews(string srcStnName, string dstStnName);
   inline void printWithHighlight(string text, int startHLight, int lenHLight);
   string chooseFromCompletions(listOfObjects<string> *completions);
-  void trimByMatchingSubWords(listOfObjects<string> * &completions, listOfObjects<string> *listOfSubWords);
+  void trimByMatchingSubWords(listOfObjects<string> *&completions, listOfObjects<string> *listOfSubWords);
   int *computeHMatrixForKMP(string keywordString);
   int KMPMatch(string text, int *hMatrix, string pattern);
   void printDirectJourneys(string srcStnName, string destStnName);
-  
- public:
-  Planner(string logFileName) {
+
+public:
+  Planner(string logFileName)
+  {
     numStations = 0;
     numJCodeSrcDestn = 0;
     lastReviewId = -1;
     logFile.open(logFileName, ios::out);
-    if (!logFile.is_open()) {
+    if (!logFile.is_open())
+    {
       cout << "Critical error: Failed to open log file \"" << logFileName << "\"" << endl;
       exit(-1);
     }
 
-    for (int i = 0; i < DICT_SIZE; i++) {
+    for (int i = 0; i < DICT_SIZE; i++)
+    {
       stationInfo[i] = nullptr;
-      for (int j = 0; j < DICT_SIZE; j++) {
-	jCRMatrix[i][j] = nullptr;
+      for (int j = 0; j < DICT_SIZE; j++)
+      {
+        jCRMatrix[i][j] = nullptr;
       }
     }
     stnNamesTrie = new Trie(&stnNameToIndex);
   }
 
-  ~Planner() {
-    if (logFile.is_open()) {
+  ~Planner()
+  {
+    if (logFile.is_open())
+    {
       logFile.close();
     }
   }
@@ -82,6 +88,5 @@ class Planner {
   void QuicksortSimple(listOfObjects<TrainInfoPerStation *> *stnInfoList, int start, int end);
   void printStationInfo(listOfObjects<TrainInfoPerStation *> *stnInfoList);
 };
-
 
 #endif

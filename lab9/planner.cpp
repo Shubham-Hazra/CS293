@@ -420,7 +420,11 @@ bool Planner::doAdminJob() {
 		    }
 		    trains = trains->next;
 		  }
-		    
+
+		  // Edit Lab 9
+		  if (!contFlag) break;
+		  // End edit lab 9
+		  
 		  // Didn't find journeyCode in fromList->object->trains
 		  // although fromStation was there in fromList
 		  // So add the current journey information to
@@ -450,8 +454,8 @@ bool Planner::doAdminJob() {
 	    }
 
 	    if (contFlag) {
-	      // fromStation, i.e. station with index j, is not
-	      // present in fromList.  So insert it now.
+	      // fromStation, i.e. station with index stnIndicesOfStops[i-1],
+	      // is not present in fromList.  So insert it now.
 	      
 	      StationConnectionInfo *newConn = new StationConnectionInfo(stnIndicesOfStops[i-1]);
 	      if (newConn == nullptr) {
@@ -464,12 +468,29 @@ bool Planner::doAdminJob() {
 		if (newConn->trains == nullptr) {
 		  logFile << "Memory allocation failure." << endl;
 		  cout << "Memory allocation failure. Continuing ..." << endl;
-		}	  
+
+		  // Edit lab 9
+		  continue;
+		}
+
+		listOfObjects<StationConnectionInfo *> *newConnEntry;
+		newConnEntry = new listOfObjects<StationConnectionInfo *> (newConn);
+		if (newConnEntry == nullptr) {
+		  logFile << "Memory allocation failure." << endl;
+		  cout << "Memory allocation failure." << endl;
+		  continue;
+		}
+		newConnEntry->next = adjacency[stnIndex].fromStations;
+		if (newConnEntry->next != nullptr) {
+		  newConnEntry->next->prev = newConnEntry;
+		}
+		adjacency[stnIndex].fromStations = newConnEntry;
+		// End edit lab 9
 	      }
 	    }
 
 	    // Next updating "to" adjacency list of fromstation
-	    // i.e. station with index stnIndicesOfStops[j]
+	    // i.e. station with index stnIndicesOfStops[stnIndicesOfStops[i-1]]
 	    
 	    listOfObjects<StationConnectionInfo *> *toList = adjacency[stnIndicesOfStops[i-1]].toStations;
 	    contFlag = true;
@@ -498,6 +519,10 @@ bool Planner::doAdminJob() {
 		    }
 		    trains = trains->next;
 		  }
+
+		  // Edit Lab 9
+		  if (!contFlag) break;
+		  // End edit lab 9
 		  
 		  // Didn't find journeyCode in toList->object->trains
 		  // although toStation was there in toList
@@ -542,7 +567,24 @@ bool Planner::doAdminJob() {
 		if (newConn->trains == nullptr) {
 		  logFile << "Memory allocation failure." << endl;
 		  cout << "Memory allocation failure. Continuing ..." << endl;
-		}	  
+
+		  // Edit lab 9
+		  continue;
+		}
+
+		listOfObjects<StationConnectionInfo *> *newConnEntry;
+		newConnEntry = new listOfObjects<StationConnectionInfo *> (newConn);
+		if (newConnEntry == nullptr) {
+		  logFile << "Memory allocation failure." << endl;
+		  cout << "Memory allocation failure." << endl;
+		  continue;
+		}
+		newConnEntry->next = adjacency[stnIndicesOfStops[i-1]].toStations;
+		if (newConnEntry->next != nullptr) {
+		  newConnEntry->next->prev = newConnEntry;
+		}
+		adjacency[stnIndicesOfStops[i-1]].toStations = newConnEntry;
+		// End edit lab 9
 	      }
 	    }
 	  }
