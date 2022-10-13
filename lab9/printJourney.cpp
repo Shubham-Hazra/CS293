@@ -23,20 +23,20 @@ public:
   }
 };
 
-bool present(listOfObjects<TrainInfoPerStation *> *train, listOfObjects<TrainInfoPerStation *> *trains);
+listOfObjects<TrainInfoPerStation *> *present(listOfObjects<TrainInfoPerStation *> *train, listOfObjects<TrainInfoPerStation *> *trains);
 listOfObjects<TrainInfoPerStation *> *BFS(listOfObjects<BFSnode *> *q, listOfObjects<BFSnode *> *tail, int *visited, int dest_index, StationAdjacencyList *adjacency, listOfObjects<TrainInfoPerStation *> *trains_available, listOfObjects<TrainInfoPerStation *> *trains_available_tail);
 
-bool present(listOfObjects<TrainInfoPerStation *> *train, listOfObjects<TrainInfoPerStation *> *trains)
+listOfObjects<TrainInfoPerStation *> *present(listOfObjects<TrainInfoPerStation *> *train, listOfObjects<TrainInfoPerStation *> *trains)
 {
   while (trains != NULL)
   {
     if (trains->object->journeyCode == train->object->journeyCode)
     {
-      return true;
+      return trains;
     }
     trains = trains->next;
   }
-  return false;
+  return NULL;
 }
 
 void Planner::printDirectJourneys(string srcStnName, string destStnName)
@@ -123,17 +123,19 @@ listOfObjects<TrainInfoPerStation *> *BFS(listOfObjects<BFSnode *> *q, listOfObj
           {
             if (trains_available == NULL)
             {
-              if (present(trains, q->object->trains))
+              listOfObjects<TrainInfoPerStation *> *train = present(trains, q->object->trains);
+              if (train != NULL)
               {
-                trains_available = new listOfObjects<TrainInfoPerStation *>(trains->object);
+                trains_available = new listOfObjects<TrainInfoPerStation *>(train->object);
                 trains_available_tail = trains_available;
               }
             }
             else
             {
-              if (present(trains, q->object->trains))
+              listOfObjects<TrainInfoPerStation *> *train = present(trains, q->object->trains);
+              if (train != NULL)
               {
-                trains_available_tail->next = new listOfObjects<TrainInfoPerStation *>(trains->object);
+                trains_available_tail->next = new listOfObjects<TrainInfoPerStation *>(train->object);
                 trains_available_tail = trains_available_tail->next;
               }
             }
@@ -149,17 +151,19 @@ listOfObjects<TrainInfoPerStation *> *BFS(listOfObjects<BFSnode *> *q, listOfObj
           {
             if (node->object->trains == NULL)
             {
-              if (present(trains, q->object->trains))
+              listOfObjects<TrainInfoPerStation *> *train = present(trains, q->object->trains);
+              if (train != NULL)
               {
-                node->object->trains = new listOfObjects<TrainInfoPerStation *>(trains->object);
+                node->object->trains = new listOfObjects<TrainInfoPerStation *>(train->object);
                 node->object->trains_tail = node->object->trains;
               }
             }
             else
             {
-              if (present(trains, q->object->trains))
+              listOfObjects<TrainInfoPerStation *> *train = present(trains, q->object->trains);
+              if (train != NULL)
               {
-                node->object->trains_tail->next = new listOfObjects<TrainInfoPerStation *>(trains->object);
+                node->object->trains_tail->next = new listOfObjects<TrainInfoPerStation *>(train->object);
                 node->object->trains_tail = node->object->trains_tail->next;
               }
             }
