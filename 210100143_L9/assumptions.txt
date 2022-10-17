@@ -1,0 +1,1 @@
+Assumed that a train with the same journey code can not arrive at the same station twice.

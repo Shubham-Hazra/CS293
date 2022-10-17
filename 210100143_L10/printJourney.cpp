@@ -1,3 +1,12 @@
+#ifndef PRINT_JOURNEY_CPP
+#define PRINT_JOURNEY_CPP
+
+#ifndef STD_HEADERS_H
+#include "std_headers.h"
+#endif
+
+using namespace std;
+
 #ifndef PLANNER_H
 #include "planner.h"
 #endif
@@ -45,10 +54,73 @@ listOfObjects<TrainInfoPerStation *> *present(listOfObjects<TrainInfoPerStation 
   return NULL;
 }
 
-// Main function in which BFS is called
-// Lists all the direct journeys from source to destination
-void Planner::printDirectJourneys(string srcStnName, string destStnName)
+// The recursive function which performs BFS and returns a list of TrainInfoPerStation with direct journies
+listOfObjects<TrainInfoPerStation *> *BFS(listOfObjects<BFSnode *> *q, listOfObjects<BFSnode *> *tail, int source_index, int dest_index, StationAdjacencyList *adjacency, listOfObjects<TrainInfoPerStation *> *trains_available, listOfObjects<TrainInfoPerStation *> *trains_available_tail)
 {
+  if (q != NULL) // Continues while q is not empty
+  {
+    int index = q->object->stnIndex;
+    listOfObjects<StationConnectionInfo *> *currStnConnInfo = adjacency[index].toStations;
+    while (currStnConnInfo != NULL)
+    {
+      if (currStnConnInfo->object->adjacentStnIndex != source_index) // To prevent cycles
+      {
+        if (currStnConnInfo->object->adjacentStnIndex == dest_index) // If destination found, add to trains_available list
+        {
+          listOfObjects<TrainInfoPerStation *> *trains = currStnConnInfo->object->trains;
+          while (trains != NULL)
+          {
+            if (trains_available == NULL)
+            {
+              trains_available = new listOfObjects<TrainInfoPerStation *>(trains->object);
+              trains_available_tail = trains_available;
+            }
+            else
+            {
+              trains_available_tail->next = new listOfObjects<TrainInfoPerStation *>(trains->object);
+              trains_available_tail = trains_available_tail->next;
+            }
+            trains = trains->next;
+          }
+        }
+        else
+        {
+          BFSnode *new_node = new BFSnode(currStnConnInfo->object->adjacentStnIndex);
+          listOfObjects<BFSnode *> *node = new listOfObjects<BFSnode *>(new_node);
+          listOfObjects<TrainInfoPerStation *> *trains = currStnConnInfo->object->trains;
+          while (trains != NULL)
+          {
+            if (node->object->trains == NULL)
+            {
+              node->object->trains = new listOfObjects<TrainInfoPerStation *>(trains->object);
+              node->object->trains_tail = node->object->trains;
+            }
+            else
+            {
+              node->object->trains_tail->next = new listOfObjects<TrainInfoPerStation *>(trains->object);
+              node->object->trains_tail = node->object->trains_tail->next;
+            }
+            trains = trains->next;
+          }
+          if (node->object->trains != NULL)
+          {
+            tail->next = node;
+            tail = node;
+          }
+        }
+      }
+      currStnConnInfo = currStnConnInfo->next;
+    }
+    q = q->next;
+    trains_available = BFS(q, tail, source_index, dest_index, adjacency, trains_available, trains_available_tail); // The recursive call
+  }
+  return trains_available;
+}
+
+void Planner::printPlanJourneys(string srcStnName, string destStnName, int maxStopOvers, int maxTransitTime)
+{
+
+  // insert your code here
 
   // insert your code here
   int source_index;
@@ -108,83 +180,15 @@ void Planner::printDirectJourneys(string srcStnName, string destStnName)
     printStationInfo(trains_available);
   }
   return;
+
+  // Whenever you need to print a journey, construct a
+  // listOfObjects<TrainInfoPerStation *> appropriately, and then
+  // use printStationInfo that we had used in Lab 7.
+  // printStationInfo is a private member function of
+  // the Planner class. It is declared in planner.h and implemented in
+  // planner.cpp
+
+  return;
 }
 
-// The recursive function which performs BFS and returns a list of TrainInfoPerStation with direct journies
-listOfObjects<TrainInfoPerStation *> *BFS(listOfObjects<BFSnode *> *q, listOfObjects<BFSnode *> *tail, int source_index, int dest_index, StationAdjacencyList *adjacency, listOfObjects<TrainInfoPerStation *> *trains_available, listOfObjects<TrainInfoPerStation *> *trains_available_tail)
-{
-  if (q != NULL) // Continues while q is not empty
-  {
-    int index = q->object->stnIndex;
-    listOfObjects<StationConnectionInfo *> *currStnConnInfo = adjacency[index].toStations;
-    while (currStnConnInfo != NULL)
-    {
-      if (currStnConnInfo->object->adjacentStnIndex != source_index) // To prevent cycles
-      {
-        if (currStnConnInfo->object->adjacentStnIndex == dest_index) // If destination found add to trains_available list
-        {
-          listOfObjects<TrainInfoPerStation *> *trains = currStnConnInfo->object->trains;
-          while (trains != NULL)
-          {
-            if (trains_available == NULL)
-            {
-              listOfObjects<TrainInfoPerStation *> *train = present(trains, q->object->trains);
-              if (train != NULL)
-              {
-                trains_available = new listOfObjects<TrainInfoPerStation *>(train->object);
-                trains_available_tail = trains_available;
-              }
-            }
-            else
-            {
-              listOfObjects<TrainInfoPerStation *> *train = present(trains, q->object->trains);
-              if (train != NULL)
-              {
-                trains_available_tail->next = new listOfObjects<TrainInfoPerStation *>(train->object);
-                trains_available_tail = trains_available_tail->next;
-              }
-            }
-            trains = trains->next;
-          }
-        }
-        else
-        {
-          BFSnode *new_node = new BFSnode(currStnConnInfo->object->adjacentStnIndex);
-          listOfObjects<BFSnode *> *node = new listOfObjects<BFSnode *>(new_node);
-          listOfObjects<TrainInfoPerStation *> *trains = currStnConnInfo->object->trains;
-          while (trains != NULL)
-          {
-            if (node->object->trains == NULL)
-            {
-              listOfObjects<TrainInfoPerStation *> *train = present(trains, q->object->trains);
-              if (train != NULL)
-              {
-                node->object->trains = new listOfObjects<TrainInfoPerStation *>(train->object);
-                node->object->trains_tail = node->object->trains;
-              }
-            }
-            else
-            {
-              listOfObjects<TrainInfoPerStation *> *train = present(trains, q->object->trains);
-              if (train != NULL)
-              {
-                node->object->trains_tail->next = new listOfObjects<TrainInfoPerStation *>(train->object);
-                node->object->trains_tail = node->object->trains_tail->next;
-              }
-            }
-            trains = trains->next;
-          }
-          if (node->object->trains != NULL)
-          {
-            tail->next = node;
-            tail = node;
-          }
-        }
-      }
-      currStnConnInfo = currStnConnInfo->next;
-    }
-    q = q->next;
-    trains_available = BFS(q, tail, source_index, dest_index, adjacency, trains_available, trains_available_tail); // The recursive call
-  }
-  return trains_available;
-}
+#endif

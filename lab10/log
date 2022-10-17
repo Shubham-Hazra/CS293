@@ -64,41 +64,26 @@ Executing "Exit reading commands from file"
 Success
 Executing "Exit admin user"
 Executing "Find direct journeys"
-Chosen source station: LOKMANYA TILAK TERMINUS MUMBAI
-Chosen destination station: KALYAN JUNCTION
-Executing "Exit normal user"
-Executing "Read commands from file" 
-Success
-Executing "Enter/delete station name"
-Executing "Enter station name"
-Successfully inserted "a" (for station name "a") in trie
-Success
-Executing "Enter/delete station name"
-Executing "Enter station name"
-Successfully inserted "b" (for station name "b") in trie
-Success
-Executing "Enter/delete station name"
-Executing "Enter station name"
-Successfully inserted "c" (for station name "c") in trie
-Success
-Executing "Enter/delete station name"
-Executing "Enter station name"
-Successfully inserted "d" (for station name "d") in trie
-Success
-Executing "Enter/delete station name"
-Executing "Enter station name"
-Successfully inserted "e" (for station name "e") in trie
-Success
-Executing "Enter/delete station name"
-Executing "Enter station name"
-Successfully inserted "f" (for station name "f") in trie
-Success
-Executing "Exit reading commands from file" 
-Success
-Executing "Exit admin user"
+Chosen source station: CHHATRAPATI SHIVAJI MAHARAJ TERMINUS MUMBAI
+Chosen destination station: MUMBAI CENTRAL
 Executing "Find direct journeys"
-Chosen source station: a
-Chosen destination station: c
+Chosen source station: CHHATRAPATI SHIVAJI MAHARAJ TERMINUS MUMBAI
+Chosen destination station: MUMBAI CENTRAL
 Executing "Find direct journeys"
-Chosen source station: d
-Chosen destination station: c
+Chosen source station: CHHATRAPATI SHIVAJI MAHARAJ TERMINUS MUMBAI
+Chosen destination station: HOWRAH JUNCTION
+Executing "Find direct journeys"
+Chosen source station: CHHATRAPATI SHIVAJI MAHARAJ TERMINUS MUMBAI
+Chosen destination station: THANE JUNCTION
+Executing "Find direct journeys"
+Chosen source station: KALYAN JUNCTION
+Chosen destination station: BHILAI JUNCTION
+Executing "Find direct journeys"
+Chosen source station: KALYAN JUNCTION
+Chosen destination station: ROURKELA JUNCTION
+Executing "Find direct journeys"
+Chosen source station: KALYAN JUNCTION
+Chosen destination station: NAGPUR CENTRAL
+Executing "Find direct journeys"
+Chosen source station: KALYAN JUNCTION
+Chosen destination station: HOWRAH JUNCTION
