@@ -65,10 +65,7 @@ Success
 Executing "Exit admin user"
 Executing "Find direct journeys"
 Chosen source station: AHMEDABAD CENTRAL
-Chosen destination station: NAGPUR CENTRAL
-Executing "Find direct journeys"
-Chosen source station: AHMEDABAD CENTRAL
 Chosen destination station: KALYAN JUNCTION
 Executing "Find direct journeys"
-Chosen source station: LOKMANYA TILAK TERMINUS MUMBAI
-Chosen destination station: HOWRAH JUNCTION
+Chosen source station: AHMEDABAD CENTRAL
+Chosen destination station: NAGPUR CENTRAL
