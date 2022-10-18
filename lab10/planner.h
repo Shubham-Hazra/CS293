@@ -15,36 +15,6 @@
 
 using namespace std;
 
-class BFSobject
-{
-public:
-  int stopovers;
-  listOfObjects<TrainInfoPerStation *> *trains;
-  listOfObjects<TrainInfoPerStation *> *trains_tail;
-
-  BFSobject()
-  {
-    stopovers = 0;
-    trains = NULL;
-    trains_tail = NULL;
-  }
-};
-
-class BFSnode
-{
-public:
-  int stnIndex;
-  listOfObjects<BFSobject *> *journies;
-  listOfObjects<BFSobject *> *journies_tail;
-
-  BFSnode(int index)
-  {
-    stnIndex = index;
-    journies = NULL;
-    journies_tail = NULL;
-  }
-};
-
 class Planner
 {
 private:
@@ -118,7 +88,6 @@ public:
   void Quicksort(listOfObjects<TrainInfoPerStation *> *stnInfoList);
   void QuicksortSimple(listOfObjects<TrainInfoPerStation *> *stnInfoList, int start, int end);
   void printStationInfo(listOfObjects<TrainInfoPerStation *> *stnInfoList);
-  listOfObjects<BFSobject *> *BFS(int stopovers, listOfObjects<TrainInfoPerStation *> **stationInfo, listOfObjects<BFSnode *> *q, listOfObjects<BFSnode *> *tail, int source_index, int dest_index, StationAdjacencyList *adjacency, listOfObjects<BFSobject *> *journeys_available, listOfObjects<BFSobject *> *journeys_available_tail);
 };
 
 #endif
