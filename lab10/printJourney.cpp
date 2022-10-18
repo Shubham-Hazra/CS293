@@ -27,37 +27,39 @@ present(listOfObjects<TrainInfoPerStation *> *train, listOfObjects<TrainInfoPerS
 // listOfObjects<BFSobject *> *BFS(int stopovers, listOfObjects<TrainInfoPerStation *> **stationInfo, listOfObjects<BFSnode *> *q, listOfObjects<BFSnode *> *tail, int source_index, int dest_index, StationAdjacencyList *adjacency, listOfObjects<BFSobject *> *journeys_available, listOfObjects<BFSobject *> *journeys_available_tail);
 
 // Function to search for a train in a given list of trains(Using journey codes)
-// If found returns the TrainInfoPerStation object from the list else returns NULL
+// If found returns the TrainInfoPerStation object from the list else returns nullptr
 listOfObjects<TrainInfoPerStation *> *present(listOfObjects<TrainInfoPerStation *> *train, listOfObjects<TrainInfoPerStation *> *trains)
 {
-  while (trains != NULL)
+  while (trains != nullptr)
   {
     if (trains->object->journeyCode == train->object->journeyCode)
     {
-      return trains;
+      listOfObjects<TrainInfoPerStation *> *train_copy = new listOfObjects<TrainInfoPerStation *>(trains->object);
+      return train_copy;
     }
     trains = trains->next;
   }
-  return NULL;
+  return nullptr;
 }
 
 // // The recursive function which performs BFS and returns a list of TrainInfoPerStation with direct journies
 listOfObjects<BFSobject *> *Planner::BFS(int stopovers, listOfObjects<TrainInfoPerStation *> **stationInfo, listOfObjects<BFSnode *> *q, listOfObjects<BFSnode *> *tail, int source_index, int dest_index, StationAdjacencyList *adjacency, listOfObjects<BFSobject *> *journeys_available, listOfObjects<BFSobject *> *journeys_available_tail)
 {
-  if (q != NULL) // Continues while q is not empty
+  if (q != nullptr) // Continues while q is not empty
   {
     int index = q->object->stnIndex;
     cout << "BRUH " << stnNameToIndex.getKeyAtIndex(q->object->stnIndex) << endl;
     listOfObjects<BFSobject *> *ptr = q->object->journies;
-    while (ptr != NULL)
+    while (ptr != nullptr)
     {
-      cout << "STOPS " << ptr->object->stopovers << endl;
+      cout << "STOPS stupid" << ptr->object->stopovers << endl;
       printStationInfo(ptr->object->trains);
       ptr = ptr->next;
     }
     listOfObjects<StationConnectionInfo *> *currStnConnInfo = adjacency[index].toStations;
-    while (currStnConnInfo != NULL)
+    while (currStnConnInfo != nullptr)
     {
+      cout << "STation" << stnNameToIndex.getKeyAtIndex(currStnConnInfo->object->adjacentStnIndex) << endl;
       if (currStnConnInfo->object->adjacentStnIndex == source_index) // To prevent cycles
       {
         currStnConnInfo = currStnConnInfo->next;
@@ -68,25 +70,28 @@ listOfObjects<BFSobject *> *Planner::BFS(int stopovers, listOfObjects<TrainInfoP
         if (q->object->stnIndex == source_index)
         {
           listOfObjects<BFSobject *> *ptr = q->object->journies;
-          while (ptr != NULL)
+          while (ptr != nullptr)
           {
+            listOfObjects<BFSobject *> *new_object = new listOfObjects<BFSobject *>(ptr->object);
             listOfObjects<TrainInfoPerStation *> *trains = currStnConnInfo->object->trains;
-            while (trains != NULL)
+            while (trains != nullptr)
             {
-              listOfObjects<BFSobject *> *new_object = new listOfObjects<BFSobject *>(ptr->object);
               if (trains->object->journeyCode == new_object->object->trains->object->journeyCode)
               {
-                if (journeys_available == NULL)
+                if (new_object->object->stopovers <= stopovers)
                 {
-                  journeys_available = new_object;
-                  journeys_available_tail = new_object;
-                  cout << "Journey added ehhe" << endl;
-                }
-                else
-                {
-                  journeys_available_tail->next = new_object;
-                  journeys_available_tail = journeys_available_tail->next;
-                  cout << "Journey added bob" << endl;
+                  if (journeys_available == nullptr)
+                  {
+                    journeys_available = new_object;
+                    journeys_available_tail = new_object;
+                    cout << "Journey added ehhe" << endl;
+                  }
+                  else
+                  {
+                    journeys_available_tail->next = new_object;
+                    journeys_available_tail = journeys_available_tail->next;
+                    cout << "Journey added bob" << endl;
+                  }
                 }
               }
               trains = trains->next;
@@ -98,40 +103,81 @@ listOfObjects<BFSobject *> *Planner::BFS(int stopovers, listOfObjects<TrainInfoP
         {
           cout << "Dest found";
           listOfObjects<BFSobject *> *ptr = q->object->journies;
-          while (ptr != NULL)
+          cout << "q journies";
+          printStationInfo(ptr->object->trains);
+          while (ptr != nullptr)
           {
             cout << "damn";
             listOfObjects<TrainInfoPerStation *> *trains = currStnConnInfo->object->trains;
-            while (trains != NULL)
+            while (trains != nullptr)
             {
-              listOfObjects<BFSobject *> *new_object = new listOfObjects<BFSobject *>(ptr->object);
-              if (trains->object->journeyCode != new_object->object->trains->object->journeyCode)
+              BFSobject *new_obj = new BFSobject();
+              listOfObjects<TrainInfoPerStation *> *t = ptr->object->trains;
+              while (t != nullptr)
               {
-                cout << "ehat";
-                listOfObjects<TrainInfoPerStation *> *train = present(trains, stationInfo[index]);
-                listOfObjects<TrainInfoPerStation *> *new_train = new listOfObjects<TrainInfoPerStation *>(train->object);
-                new_train->next = new_object->object->trains;
-                new_object->object->trains->prev = new_train;
-                new_object->object->trains = new_train;
-                new_object->object->stopovers++;
-                cout << "Stopover increased " << new_object->object->stopovers << endl;
-              }
-              if (new_object->object->stopovers <= stopovers)
-              {
-                if (journeys_available == NULL)
+                if (new_obj->trains == nullptr)
                 {
-                  journeys_available = new_object;
-                  journeys_available_tail = new_object;
-                  cout << stopovers << " Journey added heh " << new_object->object->stopovers << endl;
-                  printStationInfo(new_object->object->trains);
-                  printStationInfo(journeys_available->object->trains);
+                  listOfObjects<TrainInfoPerStation *> *tr = new listOfObjects<TrainInfoPerStation *>(t->object);
+                  new_obj->trains = tr;
+                  new_obj->trains_tail = tr;
                 }
                 else
                 {
-                  journeys_available_tail->next = new_object;
-                  journeys_available_tail = journeys_available_tail->next;
-                  cout << "Journey added hah " << new_object->object->stopovers << endl;
+                  listOfObjects<TrainInfoPerStation *> *tr = new listOfObjects<TrainInfoPerStation *>(t->object);
+                  new_obj->trains_tail->next = tr;
+                  new_obj->trains_tail = new_obj->trains_tail->next;
+                }
+                t = t->next;
+              }
+              listOfObjects<BFSobject *> *new_object = new listOfObjects<BFSobject *>(new_obj);
+              if (trains->object->journeyCode != new_object->object->trains->object->journeyCode)
+              {
+                if (new_object->object->stopovers < stopovers)
+                {
+                  cout << "ehat";
+                  listOfObjects<TrainInfoPerStation *> *train = present(trains, stationInfo[index]);
+                  listOfObjects<TrainInfoPerStation *> *new_train = new listOfObjects<TrainInfoPerStation *>(trains->object);
+                  new_train->next = new_object->object->trains;
+                  new_object->object->trains->prev = new_train;
+                  new_object->object->trains = new_train;
+                  new_object->object->stopovers++;
+                  cout << "Stopover increased " << new_object->object->stopovers << endl;
                   printStationInfo(new_object->object->trains);
+                  if (journeys_available == nullptr)
+                  {
+                    journeys_available = new_object;
+                    journeys_available_tail = new_object;
+                    cout << stopovers << " Journey added hesafh " << new_object->object->stopovers << endl;
+                    printStationInfo(new_object->object->trains);
+                  }
+                  else
+                  {
+                    journeys_available_tail->next = new_object;
+                    journeys_available_tail = journeys_available_tail->next;
+                    cout << "Journey added hahoo " << new_object->object->stopovers << endl;
+                    printStationInfo(new_object->object->trains);
+                  }
+                }
+              }
+              else
+              {
+                if (new_object->object->stopovers <= stopovers)
+                {
+                  if (journeys_available == nullptr)
+                  {
+                    journeys_available = new_object;
+                    journeys_available_tail = new_object;
+                    cout << stopovers << " Journey added heh " << new_object->object->stopovers << endl;
+                    printStationInfo(new_object->object->trains);
+                    printStationInfo(journeys_available->object->trains);
+                  }
+                  else
+                  {
+                    journeys_available_tail->next = new_object;
+                    journeys_available_tail = journeys_available_tail->next;
+                    cout << "Journey added hah " << new_object->object->stopovers << endl;
+                    printStationInfo(new_object->object->trains);
+                  }
                 }
               }
               trains = trains->next;
@@ -146,23 +192,22 @@ listOfObjects<BFSobject *> *Planner::BFS(int stopovers, listOfObjects<TrainInfoP
         if (q->object->stnIndex == source_index)
         {
           listOfObjects<BFSobject *> *ptr = q->object->journies;
-          while (ptr != NULL)
+          while (ptr != nullptr)
           {
+            listOfObjects<BFSobject *> *new_object = new listOfObjects<BFSobject *>(ptr->object);
             listOfObjects<TrainInfoPerStation *> *trains = currStnConnInfo->object->trains;
-            while (trains != NULL)
+            while (trains != nullptr)
             {
-              BFSobject *new_obj = new BFSobject((*ptr->object));
-              if (trains->object->journeyCode == new_obj->trains->object->journeyCode)
+              if (trains->object->journeyCode == new_object->object->trains->object->journeyCode)
               {
-                if (new_node->journies == NULL)
+                if (new_node->journies == nullptr)
                 {
-                  listOfObjects<BFSobject *> *new_object = new listOfObjects<BFSobject *>(new_obj);
                   new_node->journies = new_object;
                   new_node->journies_tail = new_object;
                 }
                 else
                 {
-                  listOfObjects<BFSobject *> *new_object = new listOfObjects<BFSobject *>(new_obj);
+
                   new_node->journies_tail->next = new_object;
                   new_node->journies_tail = new_node->journies_tail->next;
                 }
@@ -174,38 +219,41 @@ listOfObjects<BFSobject *> *Planner::BFS(int stopovers, listOfObjects<TrainInfoP
         }
         else
         {
-          // listOfObjects<BFSobject *> *ptr = q->object->journies;
-          // while (ptr != NULL)
-          // {
-          //   listOfObjects<TrainInfoPerStation *> *trains = currStnConnInfo->object->trains;
-          //   while (trains != NULL)
-          //   {
-          //     BFSobject *new_obj = new BFSobject((*ptr->object));
-          //     if (trains->object->journeyCode == new_obj->trains->object->journeyCode)
-          //     {
-          //       if (new_node->journies == NULL)
-          //       {
-          //         listOfObjects<BFSobject *> *new_object = new listOfObjects<BFSobject *>(new_obj);
-          //         new_node->journies = new_object;
-          //         new_node->journies_tail = new_object;
-          //       }
-          //       else
-          //       {
-          //         listOfObjects<BFSobject *> *new_object = new listOfObjects<BFSobject *>(new_obj);
-          //         new_node->journies_tail->next = new_object;
-          //         new_node->journies_tail = new_node->journies_tail->next;
-          //       }
-          //     }
-          //     trains = trains->next;
-          //   }
-          //   ptr = ptr->next;
-          // }
+          cout << "In alternate" << stnNameToIndex.getKeyAtIndex(currStnConnInfo->object->adjacentStnIndex) << endl;
+          listOfObjects<BFSobject *> *ptr = q->object->journies;
+          while (ptr != nullptr)
+          {
+            listOfObjects<BFSobject *> *new_object = new listOfObjects<BFSobject *>(ptr->object);
+            listOfObjects<TrainInfoPerStation *> *trains = currStnConnInfo->object->trains;
+            while (trains != nullptr)
+            {
+              cout << trains->object->journeyCode << " " << q->object->journies->object->trains->object->journeyCode << endl;
+              if (trains->object->journeyCode == new_object->object->trains->object->journeyCode)
+              {
+                cout << "In node addition" << stnNameToIndex.getKeyAtIndex(currStnConnInfo->object->adjacentStnIndex) << endl;
+                if (new_node->journies == nullptr)
+                {
+
+                  new_node->journies = new_object;
+                  new_node->journies_tail = new_object;
+                }
+                else
+                {
+                  new_node->journies_tail->next = new_object;
+                  new_node->journies_tail = new_node->journies_tail->next;
+                }
+              }
+              trains = trains->next;
+            }
+            ptr = ptr->next;
+          }
         }
         listOfObjects<BFSnode *> *node = new listOfObjects<BFSnode *>(new_node);
-        if (node->object->journies != NULL)
+        if (node->object->journies != nullptr)
         {
           tail->next = node;
           tail = node;
+          cout << "NODE added" << stnNameToIndex.getKeyAtIndex(currStnConnInfo->object->adjacentStnIndex) << endl;
         }
       }
       currStnConnInfo = currStnConnInfo->next;
@@ -238,19 +286,19 @@ void Planner::printPlanJourneys(string srcStnName, string destStnName, int maxSt
       break;
     }
   }
-  listOfObjects<BFSobject *> *journeys_available = NULL;
-  listOfObjects<BFSobject *> *journeys_available_tail = NULL;
+  listOfObjects<BFSobject *> *journeys_available = nullptr;
+  listOfObjects<BFSobject *> *journeys_available_tail = nullptr;
   BFSnode *new_node = new BFSnode(source_index);
   listOfObjects<BFSnode *> *q = new listOfObjects<BFSnode *>(new_node);
   listOfObjects<StationConnectionInfo *> *currStnConnInfo = adjacency[source_index].toStations;
   listOfObjects<TrainInfoPerStation *> *source_trains = stationInfo[source_index];
-  while (currStnConnInfo != NULL) // Population the BFSnode of the source station with trains leaving from the source station
+  while (currStnConnInfo != nullptr) // Population the BFSnode of the source station with trains leaving from the source station
   {
     listOfObjects<TrainInfoPerStation *> *trains = currStnConnInfo->object->trains;
-    while (trains != NULL)
+    while (trains != nullptr)
     {
       listOfObjects<TrainInfoPerStation *> *train = present(trains, source_trains);
-      if (q->object->journies == NULL)
+      if (q->object->journies == nullptr)
       {
         BFSobject *new_obj = new BFSobject();
         listOfObjects<TrainInfoPerStation *> *new_train = new listOfObjects<TrainInfoPerStation *>(train->object);
@@ -280,14 +328,14 @@ void Planner::printPlanJourneys(string srcStnName, string destStnName, int maxSt
   journeys_available = BFS(maxStopOvers, stationInfo, q, tail, source_index, dest_index, adjacency, journeys_available, journeys_available_tail); // Calling BFS from the source station
 
   listOfObjects<BFSobject *> *ptr = journeys_available;
-  if (ptr == NULL)
+  if (ptr == nullptr)
   {
     cout << "No journies available" << endl;
   }
   else
   {
     cout << "Journies available" << endl;
-    while (ptr != NULL)
+    while (ptr != nullptr)
     {
       cout << "STOPS " << ptr->object->stopovers << endl;
       printStationInfo(ptr->object->trains);
