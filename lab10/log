@@ -1,6 +1,4 @@
 Executing "Read commands from file" 
-Failed
-Executing "Read commands from file" 
 Success
 Executing "Enter/delete station name"
 Executing "Enter station name"
@@ -65,6 +63,15 @@ Success
 Executing "Exit reading commands from file" 
 Success
 Executing "Exit admin user"
+Executing "Find direct journeys"
+Chosen source station: CHHATRAPATI SHIVAJI MAHARAJ TERMINUS MUMBAI
+Chosen destination station: HOWRAH JUNCTION
+Executing "Find direct journeys"
+Chosen source station: CHHATRAPATI SHIVAJI MAHARAJ TERMINUS MUMBAI
+Chosen destination station: HOWRAH JUNCTION
+Executing "Find direct journeys"
+Chosen source station: CHHATRAPATI SHIVAJI MAHARAJ TERMINUS MUMBAI
+Chosen destination station: HOWRAH JUNCTION
 Executing "Find direct journeys"
 Chosen source station: CHHATRAPATI SHIVAJI MAHARAJ TERMINUS MUMBAI
 Chosen destination station: HOWRAH JUNCTION
