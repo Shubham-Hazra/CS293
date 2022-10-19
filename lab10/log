@@ -1,4 +1,6 @@
 Executing "Read commands from file" 
+Failed
+Executing "Read commands from file" 
 Success
 Executing "Enter/delete station name"
 Executing "Enter station name"
@@ -64,15 +66,5 @@ Executing "Exit reading commands from file"
 Success
 Executing "Exit admin user"
 Executing "Find direct journeys"
-Chosen source station: THANE JUNCTION
-Chosen destination station: PUNE CANTONMENT
-Invalid user option 0
-Invalid user option 0
-Invalid user option 0
-Invalid user option 0
-Invalid user option 0
-Invalid user option 0
-Invalid user option 0
-Invalid user option 0
-Invalid user option 0
-Invalid user option 0
+Chosen source station: CHHATRAPATI SHIVAJI MAHARAJ TERMINUS MUMBAI
+Chosen destination station: HOWRAH JUNCTION

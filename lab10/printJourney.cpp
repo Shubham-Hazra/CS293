@@ -57,10 +57,112 @@ public:
 // Function Prototypes
 listOfObjects<TrainInfoPerStation *> *
 present(listOfObjects<TrainInfoPerStation *> *train, listOfObjects<TrainInfoPerStation *> *trains);
-// listOfObjects<BFSobject *> *BFS(int stopovers, listOfObjects<TrainInfoPerStation *> **stationInfo, listOfObjects<BFSnode *> *q, listOfObjects<BFSnode *> *tail, int source_index, int dest_index, StationAdjacencyList *adjacency, listOfObjects<BFSobject *> *journeys_available, listOfObjects<BFSobject *> *journeys_available_tail);
+listOfObjects<BFSobject *> *BFS(int stopovers, listOfObjects<TrainInfoPerStation *> **stationInfo, listOfObjects<BFSnode *> *q, listOfObjects<BFSnode *> *tail, int source_index, int dest_index, StationAdjacencyList *adjacency, listOfObjects<BFSobject *> *journeys_available, listOfObjects<BFSobject *> *journeys_available_tail);
+void printInfo(listOfObjects<TrainInfoPerStation *> *stnInfoList, listOfObjects<int *> *source_indexes);
 
+// void printInfo(listOfObjects<TrainInfoPerStation *> *stnInfoList, listOfObjects<int *> *source_indexes)
+// {
+//   listOfObjects<TrainInfoPerStation *> *currList, *expandedList;
+//   TrainInfoPerStation *currInfo;
+//   string days[7] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+
+//   // Expanding information in stnInfoList to get a list of train info
+//   // in which each element of the list refers to a single day of the
+//   // week.  This is the list that has to be finally sorted using
+//   // quicksort.
+
+//   currList = stnInfoList;
+//   expandedList = nullptr;
+//   int listLength = 0;
+//   while (currList != nullptr)
+//   {
+//     currInfo = currList->object;
+//     if (currInfo != nullptr)
+//     {
+//       // Make as many copies of currInfo as the total count of days in the week
+//       // when this train runs from/to this station
+//       int jCode = currInfo->journeyCode;
+//       int stSeq = currInfo->stopSeq;
+//       int arrTime = currInfo->arrTime;
+//       int depTime = currInfo->depTime;
+
+//       for (int i = 0; i < 7; i++)
+//       {
+//         if (currInfo->daysOfWeek[i])
+//         {
+//           TrainInfoPerStation *newExpandedElement = new TrainInfoPerStation(jCode, stSeq, arrTime, depTime);
+//           if (newExpandedElement == nullptr)
+//           {
+//             cerr << "Memory allocation failure." << endl;
+//             continue;
+//           }
+//           newExpandedElement->setDayOfWeek(i);
+
+//           listOfObjects<TrainInfoPerStation *> *newExpandedListElement = new listOfObjects<TrainInfoPerStation *>(newExpandedElement);
+//           if (newExpandedListElement == nullptr)
+//           {
+//             cerr << "Memory allocation failure." << endl;
+//             continue;
+//           }
+
+//           if (expandedList == nullptr)
+//           {
+//             expandedList = newExpandedListElement;
+//           }
+//           else
+//           {
+//             newExpandedListElement->next = expandedList;
+//             expandedList->prev = newExpandedListElement;
+//             expandedList = newExpandedListElement;
+//           }
+//           listLength++;
+//         }
+//       }
+//     }
+//     currList = currList->next;
+//   }
+//   currList = expandedList;
+//   while (currList != nullptr)
+//   {
+//     currInfo = currList->object;
+//     if (currInfo != nullptr)
+//     {
+//       cout << GREEN << "Day(s): " << RESET;
+//       for (int i = 0; i < 7; i++)
+//       {
+//         if (currInfo->daysOfWeek[i])
+//           cout << days[i] << " ";
+//       }
+//       cout << endl;
+//       cout << BLUE << "JourneyCode: " << currInfo->journeyCode << RESET << "\t";
+//       cout << RED << "Arr: " << RESET;
+//       if (currInfo->arrTime == -1)
+//       {
+//         cout << "Starts";
+//       }
+//       else
+//       {
+//         cout << currInfo->arrTime;
+//       }
+//       cout << RED << " Dep: " << RESET;
+//       if (currInfo->depTime == -1)
+//       {
+//         cout << "Ends";
+//       }
+//       else
+//       {
+//         cout << currInfo->depTime;
+//       }
+//       cout << endl;
+//     }
+//     currList = currList->next;
+//     index = index->next;
+//   }
+//   cout << endl;
+// }
 // Function to search for a train in a given list of trains(Using journey codes)
 // If found returns the TrainInfoPerStation object from the list else returns nullptr
+
 listOfObjects<TrainInfoPerStation *> *present(listOfObjects<TrainInfoPerStation *> *train, listOfObjects<TrainInfoPerStation *> *trains)
 {
   while (trains != nullptr)
@@ -91,7 +193,7 @@ listOfObjects<BFSobject *> *BFS(int stopovers, listOfObjects<TrainInfoPerStation
     {
       if (currStnConnInfo->object->adjacentStnIndex == dest_index) // If destination found add to trains_available list
       {
-        if (q->object->stnIndex == source_index && q->object->journies->next == NULL)
+        if (q->object->stnIndex == source_index && q->object->journies->object->trains->next == NULL)
         {
           listOfObjects<BFSobject *> *ptr = q->object->journies;
           while (ptr != nullptr)
@@ -100,7 +202,7 @@ listOfObjects<BFSobject *> *BFS(int stopovers, listOfObjects<TrainInfoPerStation
             listOfObjects<TrainInfoPerStation *> *trains = currStnConnInfo->object->trains;
             while (trains != nullptr)
             {
-              if (trains->object->journeyCode == new_object->object->trains->object->journeyCode)
+              if (trains->object->journeyCode == new_object->object->trains_tail->object->journeyCode)
               {
                 if (new_object->object->stopovers <= stopovers)
                 {
@@ -147,39 +249,42 @@ listOfObjects<BFSobject *> *BFS(int stopovers, listOfObjects<TrainInfoPerStation
                 }
                 t = t->next;
               }
-              // listOfObjects<int *> *i = ptr->object->station_indexes;
-              // while (i != nullptr)
-              // {
-              //   if (new_obj->station_indexes == nullptr)
-              //   {
-              //     listOfObjects<int *> *ij = new listOfObjects<int *>(i->object);
-              //     new_obj->station_indexes = ij;
-              //     new_obj->station_indexes_tail = ij;
-              //   }
-              //   else
-              //   {
-              //     listOfObjects<int *> *ij = new listOfObjects<int *>(i->object);
-              //     new_obj->station_indexes_tail->next = ij;
-              //     new_obj->station_indexes_tail = new_obj->station_indexes_tail->next;
-              //   }
-              //   i = i->next;
-              // }
+              listOfObjects<int *> *i = ptr->object->station_indexes;
+              while (i != nullptr)
+              {
+                if (new_obj->station_indexes == nullptr)
+                {
+                  listOfObjects<int *> *ij = new listOfObjects<int *>(i->object);
+                  new_obj->station_indexes = ij;
+                  new_obj->station_indexes_tail = ij;
+                }
+                else
+                {
+                  listOfObjects<int *> *ij = new listOfObjects<int *>(i->object);
+                  new_obj->station_indexes_tail->next = ij;
+                  new_obj->station_indexes_tail = new_obj->station_indexes_tail->next;
+                }
+                i = i->next;
+              }
               new_obj->stopovers = ptr->object->stopovers;
               listOfObjects<BFSobject *> *new_object = new listOfObjects<BFSobject *>(new_obj);
-              if (trains->object->journeyCode != new_object->object->trains->object->journeyCode)
+              if (trains->object->journeyCode != new_object->object->trains_tail->object->journeyCode)
               {
                 if (new_object->object->stopovers < stopovers)
                 {
                   listOfObjects<TrainInfoPerStation *> *train = present(trains, stationInfo[index]);
                   listOfObjects<TrainInfoPerStation *> *new_train = new listOfObjects<TrainInfoPerStation *>(trains->object);
-                  new_train->next = new_object->object->trains;
-                  new_object->object->trains->prev = new_train;
-                  new_object->object->trains = new_train;
-                  // int *num = new int(q->object->stnIndex);
-                  // listOfObjects<int *> *new_int = new listOfObjects<int *>(num);
-                  // new_object->object->station_indexes_tail->next = new_int;
-                  // new_int->prev = new_object->object->station_indexes_tail;
-                  // new_object->object->station_indexes_tail = new_int;
+                  // new_train->next = new_object->object->trains;
+                  // new_object->object->trains->prev = new_train;
+                  // new_object->object->trains = new_train;
+                  new_object->object->trains_tail->next = new_train;
+                  new_train->prev = new_object->object->trains_tail;
+                  new_object->object->trains_tail = new_object->object->trains_tail->next;
+                  int *num = new int(q->object->stnIndex);
+                  listOfObjects<int *> *new_int = new listOfObjects<int *>(num);
+                  new_object->object->station_indexes_tail->next = new_int;
+                  new_int->prev = new_object->object->station_indexes_tail;
+                  new_object->object->station_indexes_tail = new_object->object->station_indexes_tail->next;
                   new_object->object->stopovers++;
                   if (journeys_available == nullptr)
                   {
@@ -218,7 +323,7 @@ listOfObjects<BFSobject *> *BFS(int stopovers, listOfObjects<TrainInfoPerStation
       else
       {
         BFSnode *new_node = new BFSnode(currStnConnInfo->object->adjacentStnIndex);
-        if (q->object->stnIndex == source_index && q->object->journies->next == NULL)
+        if (q->object->stnIndex == source_index && q->object->journies->object->trains->next == NULL)
         {
           listOfObjects<BFSobject *> *ptr = q->object->journies;
           while (ptr != nullptr)
@@ -244,8 +349,25 @@ listOfObjects<BFSobject *> *BFS(int stopovers, listOfObjects<TrainInfoPerStation
                 }
                 t = t->next;
               }
+              listOfObjects<int *> *i = ptr->object->station_indexes;
+              while (i != nullptr)
+              {
+                if (new_obj->station_indexes == nullptr)
+                {
+                  listOfObjects<int *> *ij = new listOfObjects<int *>(i->object);
+                  new_obj->station_indexes = ij;
+                  new_obj->station_indexes_tail = ij;
+                }
+                else
+                {
+                  listOfObjects<int *> *ij = new listOfObjects<int *>(i->object);
+                  new_obj->station_indexes_tail->next = ij;
+                  new_obj->station_indexes_tail = new_obj->station_indexes_tail->next;
+                }
+                i = i->next;
+              }
               listOfObjects<BFSobject *> *new_object = new listOfObjects<BFSobject *>(new_obj);
-              if (trains->object->journeyCode == new_object->object->trains->object->journeyCode)
+              if (trains->object->journeyCode == new_object->object->trains_tail->object->journeyCode)
               {
                 if (new_node->journies == nullptr)
                 {
@@ -290,26 +412,26 @@ listOfObjects<BFSobject *> *BFS(int stopovers, listOfObjects<TrainInfoPerStation
                 }
                 t = t->next;
               }
-              // listOfObjects<int *> *i = ptr->object->station_indexes;
-              // while (i != nullptr)
-              // {
-              //   if (new_obj->station_indexes == nullptr)
-              //   {
-              //     listOfObjects<int *> *ij = new listOfObjects<int *>(i->object);
-              //     new_obj->station_indexes = ij;
-              //     new_obj->station_indexes_tail = ij;
-              //   }
-              //   else
-              //   {
-              //     listOfObjects<int *> *ij = new listOfObjects<int *>(i->object);
-              //     new_obj->station_indexes_tail->next = ij;
-              //     new_obj->station_indexes_tail = new_obj->station_indexes_tail->next;
-              //   }
-              //   i = i->next;
-              // }
+              listOfObjects<int *> *i = ptr->object->station_indexes;
+              while (i != nullptr)
+              {
+                if (new_obj->station_indexes == nullptr)
+                {
+                  listOfObjects<int *> *ij = new listOfObjects<int *>(i->object);
+                  new_obj->station_indexes = ij;
+                  new_obj->station_indexes_tail = ij;
+                }
+                else
+                {
+                  listOfObjects<int *> *ij = new listOfObjects<int *>(i->object);
+                  new_obj->station_indexes_tail->next = ij;
+                  new_obj->station_indexes_tail = new_obj->station_indexes_tail->next;
+                }
+                i = i->next;
+              }
               new_obj->stopovers = ptr->object->stopovers;
               listOfObjects<BFSobject *> *new_object = new listOfObjects<BFSobject *>(new_obj);
-              if (trains->object->journeyCode == new_object->object->trains->object->journeyCode)
+              if (trains->object->journeyCode == new_object->object->trains_tail->object->journeyCode)
               {
                 if (new_object->object->stopovers <= stopovers)
                 {
@@ -330,14 +452,17 @@ listOfObjects<BFSobject *> *BFS(int stopovers, listOfObjects<TrainInfoPerStation
               {
                 listOfObjects<TrainInfoPerStation *> *train = present(trains, stationInfo[index]);
                 listOfObjects<TrainInfoPerStation *> *new_train = new listOfObjects<TrainInfoPerStation *>(trains->object);
-                new_train->next = new_object->object->trains;
-                new_object->object->trains->prev = new_train;
-                new_object->object->trains = new_train;
-                // int *num = new int(q->object->stnIndex);
-                // listOfObjects<int *> *new_int = new listOfObjects<int *>(num);
-                // new_object->object->station_indexes_tail->next = new_int;
-                // new_int->prev = new_object->object->station_indexes_tail;
-                // new_object->object->station_indexes_tail = new_int;
+                // new_train->next = new_object->object->trains;
+                // new_object->object->trains->prev = new_train;
+                // new_object->object->trains = new_train;
+                new_object->object->trains_tail->next = new_train;
+                new_train->prev = new_object->object->trains_tail;
+                new_object->object->trains_tail = new_object->object->trains_tail->next;
+                int *num = new int(q->object->stnIndex);
+                listOfObjects<int *> *new_int = new listOfObjects<int *>(num);
+                new_object->object->station_indexes_tail->next = new_int;
+                new_int->prev = new_object->object->station_indexes_tail;
+                new_object->object->station_indexes_tail = new_int;
                 new_object->object->stopovers++;
                 if (new_object->object->stopovers <= stopovers)
                 {
@@ -444,31 +569,68 @@ void Planner::printPlanJourneys(string srcStnName, string destStnName, int maxSt
   listOfObjects<BFSnode *> *tail;
   tail = q;
   journeys_available = BFS(maxStopOvers, stationInfo, q, tail, source_index, dest_index, adjacency, journeys_available, journeys_available_tail); // Calling BFS from the source station
-
   listOfObjects<BFSobject *> *ptr = journeys_available;
+  string days[7] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
   if (ptr == nullptr)
   {
     cout << "No journies available" << endl;
   }
   else
   {
-    cout << "Journies available" << endl;
-
+    cout << "JOURNEYS AVAILABLE\n"
+         << endl;
     while (ptr != nullptr)
     {
       cout << "STOPS " << ptr->object->stopovers << endl;
-      // cout << "Stations: " << endl;
-      // listOfObjects<int *> *stn_ptr = ptr->object->station_indexes;
-      // listOfObjects<TrainInfoPerStation *> *train = ptr->object->trains;
-      // while (stn_ptr != NULL)
-      // {
-      //   cout << stnNameToIndex.getKeyAtIndex(*stn_ptr->object) << " Journey code: " << train->object->journeyCode << endl;
-      //   stn_ptr = stn_ptr->next;
-      //   train = train->next;
-      // }
-      // cout << stnNameToIndex.getKeyAtIndex(dest_index) << endl;
-      // cout << endl;
-      printStationInfo(ptr->object->trains);
+      cout << GREEN << "STARTS: " << RESET << endl;
+      listOfObjects<int *> *stn_ptr = ptr->object->station_indexes;
+      listOfObjects<TrainInfoPerStation *> *train = ptr->object->trains;
+      int i = 0;
+      while (stn_ptr != NULL)
+      {
+        if (i != 0)
+        {
+          cout << GREEN << "TRANSIT TO" << RESET << endl;
+        }
+        cout << "Station: " << stnNameToIndex.getKeyAtIndex(*stn_ptr->object) << endl;
+        cout << "Journey code: " << BLUE << train->object->journeyCode << RESET << " ";
+        cout << RED << "Arr: " << RESET;
+        if (train->object->arrTime == -1)
+        {
+          cout << "Starts";
+        }
+        else
+        {
+          cout << train->object->arrTime;
+        }
+        cout << RED << " Dep: " << RESET;
+        if (train->object->depTime == -1)
+        {
+          cout << "Ends";
+        }
+        else
+        {
+          cout << train->object->depTime;
+        }
+        cout << endl;
+        stn_ptr = stn_ptr->next;
+        train = train->next;
+        i++;
+      }
+      cout << GREEN << "ENDS: " << RESET << endl;
+      cout << stnNameToIndex.getKeyAtIndex(dest_index) << endl;
+      train = ptr->object->trains_tail;
+      cout << "Day(s): "
+           << " ";
+      for (int i = 0; i < 7; i++)
+      {
+        if (train->object->daysOfWeek[i])
+        {
+          cout << BLUE << days[i] << RESET << "  ";
+        }
+      }
+      cout << endl
+           << endl;
       ptr = ptr->next;
     }
   }
