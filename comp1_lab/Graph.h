@@ -53,9 +53,6 @@ public:
   BST(TreeNode *root);
   // Methods
   void printBST(const string &prefix, bool isLeft);
-  void getBST(const string &prefix, bool isLeft);
-  void clearResult();
-  vector<string> getResult();
   bool insert(int val);
 };
 
