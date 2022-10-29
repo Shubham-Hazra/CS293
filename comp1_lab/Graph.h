@@ -87,12 +87,14 @@ class Graph
 
   // Add appropriate fields as necessary for your implementation
 
-  int connected_components;         // Number of connected components in the graph
-  int visited_once;                 // Number of nodes visited once
-  int visited_twice;                // Number of nodes visited_twice
-  int nodes_incycle;                // Number of nodes present in atleast one cycle
-  listOfObjects<BST *> *trees;      // The head of the linked list contaning pointers to BSTs
-  listOfObjects<BST *> *trees_tail; // The tail of the linked list containing pointers to BSTs
+  int connected_components;          // Number of connected components in the graph
+  int visited_once;                  // Number of nodes visited once
+  int visited_twice;                 // Number of nodes visited_twice
+  int nodes_incycle;                 // Number of nodes present in atleast one cycle
+  listOfObjects<BST *> *trees;       // The head of the linked list contaning pointers to BSTs
+  listOfObjects<BST *> *trees_tail;  // The tail of the linked list containing pointers to BSTs
+  listOfObjects<Node *> *stack;      // The bottom of the stack
+  listOfObjects<Node *> *stack_tail; // The top of the stack
 
 public:
   Graph(int nNodes, int nEdges, string gFileName)
@@ -101,10 +103,12 @@ public:
     visited_once = 0;
     visited_twice = 0;
     nodes_incycle = 0;
-    numNodes = nNodes;
-    numEdges = nEdges;
+    stack = nullptr;
+    stack_tail = nullptr;
     trees = nullptr;
     trees_tail = nullptr;
+    numNodes = nNodes;
+    numEdges = nEdges;
     graphFile.open(gFileName, ios::out);
     if (!graphFile.is_open())
     {
@@ -229,9 +233,12 @@ public:
   }
 
   // Add appropriate method declarations as necessary for your implementation
-  void DFS(Node *root, Node *node, int component, BST *tree); // The function which recursively calls itself to do DFS
+  void DFS(int component, BST *tree); // The function which recursively calls itself to do DFS
   void modifiedDFS();
   void printResults();
+  Node *stack_pop();           // Pops the topmost element from the stack and returns it
+  void stack_push(Node *node); // Pushes the new  element to the top of the stack
+  Node *stack_top();           // Returns the pointer to the topmost element
 };
 
 #endif

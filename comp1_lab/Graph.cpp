@@ -32,8 +32,9 @@ void Graph::modifiedDFS()
         new_tree->prev = trees_tail;
         trees_tail = trees_tail->next;
       }
-      connected_components = component;                         // Updates connected_components number
-      DFS(&nodes[i], &nodes[i], component, trees_tail->object); // Calls the recursive DFS function
+      connected_components = component; // Updates connected_components number
+      stack_push(&nodes[i]);
+      DFS(component, trees_tail->object); // Calls the recursive DFS function
       component++;
     }
   }
@@ -55,37 +56,66 @@ void Graph::modifiedDFS()
 }
 
 // The function which recursively calls itself to perform DFS
-void Graph::DFS(Node *root, Node *node, int component, BST *tree)
+void Graph::DFS(int component, BST *tree)
 {
-  listOfObjects<Node *> *ptr = node->adjacent;
-  node->visited++;
-  node->component_num = component;
-  tree->insert(node->value); // Inserts the value in the node into the BST
-  while (ptr != nullptr)     // For all nodes adjacent to node
+  while (stack != nullptr)
   {
-    if (ptr->object->visited == 0) // If the node was unvisited
+    Node *node = stack_pop();
+    listOfObjects<Node *> *ptr = node->adjacent;
+    node->visited++;
+    node->component_num = component;
+    tree->insert(node->value); // Inserts the value in the node into the BST
+    cout << node->value << " ";
+    if (node->visited == 1)
     {
-      ptr->object->parent = node;
-      DFS(root, (ptr->object), component, tree); // Recursive call
+      while (ptr != nullptr) // For all nodes adjacent to node
+      {
+        if (ptr->object->visited == 0) // If the node was unvisited
+        {
+          ptr->object->parent = node;
+          stack_push(ptr->object);
+          DFS(component, tree); // Recursive call
+        }
+        else if (ptr->object->visited == 1 && node->parent != ptr->object) // If the node was visited only once
+        {
+          ptr->object->incycle = true;
+          Node *ptr1 = node;
+          while (ptr1 != ptr->object && ptr1 != nullptr)
+          {
+            ptr1->incycle = true;
+            ptr1 = ptr1->parent;
+          }
+          stack_push(ptr->object);
+          DFS(component, tree); // Recursive call
+        }
+        ptr = ptr->next;
+      }
     }
-    else if (ptr->object->visited == 1 && node->parent != ptr->object) // If the node was visited only once
+    else if (node->visited == 2)
     {
-      // ptr->object->incycle = true;
-      // Node *ptr1 = node;
-      // while (ptr1 != ptr->object && ptr1 != nullptr)
-      // {
-      //   ptr1->incycle = true;
-      //   ptr1 = ptr1->parent;
-      // }
-      DFS(root, (ptr->object), component, tree); // Recursive call
+      while (ptr != nullptr) // For all nodes adjacent to node
+      {
+        if (ptr->object->visited == 0) // If the node was unvisited
+        {
+          ptr->object->parent = node;
+          stack_push(ptr->object);
+          DFS(component, tree); // Recursive call
+        }
+        else if (ptr->object->visited == 1 && node->parent != ptr->object) // If the node was visited only once
+        {
+          stack_push(ptr->object);
+          DFS(component, tree); // Recursive call
+        }
+        ptr = ptr->next;
+      }
     }
-    ptr = ptr->next;
   }
 }
 
 // Function to print all the relevant results
 void Graph::printResults()
 {
+  cout << endl;
   cout << "No.of connected components : " << connected_components << endl;
   cout << "No.of nodes visited once : " << visited_once << endl;
   cout << "No.of nodes visited twice : " << visited_twice << endl;
@@ -98,6 +128,60 @@ void Graph::printResults()
     ptr = ptr->next;
   }
   return;
+}
+
+// Pops the topmost element and returns it
+Node *Graph::stack_pop()
+{
+  if (stack_tail == nullptr) // If stack empty, returns null
+  {
+    return nullptr;
+  }
+  else if (stack_tail->prev == nullptr) // If stack only has one element
+  {
+    Node *temp = stack_tail->object;
+    stack_tail = nullptr;
+    stack = nullptr;
+    return temp;
+  }
+  else
+  {
+    Node *temp = stack_tail->object;
+    stack_tail = stack_tail->prev;
+    stack_tail->next = nullptr;
+    return temp;
+  }
+}
+
+// Pushes the new element into the stack
+void Graph::stack_push(Node *node)
+{
+  if (stack == nullptr) // If stack is empty
+  {
+    listOfObjects<Node *> *new_node = new listOfObjects<Node *>(node);
+    stack = new_node;
+    stack_tail = new_node;
+  }
+  else
+  {
+    listOfObjects<Node *> *new_node = new listOfObjects<Node *>(node);
+    stack_tail->next = new_node;
+    new_node->prev = stack_tail;
+    stack_tail = stack_tail->next;
+  }
+}
+
+// Returns the topmost element in the stack
+Node *Graph::stack_top()
+{
+  if (stack_tail == nullptr) // If stack is empty, returns null
+  {
+    return nullptr;
+  }
+  else
+  {
+    return stack_tail->object;
+  }
 }
 
 // Constructor of the BST
