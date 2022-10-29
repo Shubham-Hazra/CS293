@@ -15,6 +15,7 @@ void Graph::modifiedDFS()
   int component = 1;
   for (int i = 0; i < numNodes; i++) // For all nodes checks if the node has a component number assigned to it
   {
+    int time = 0;
     if (nodes[i].component_num == 0) // If component number not assigned, starts DFS from that node
     {
       if (trees == nullptr) // Creates a new BST for a new DFS and adds to the linked list of BSTs
@@ -34,7 +35,7 @@ void Graph::modifiedDFS()
       }
       connected_components = component; // Updates connected_components number
       stack_push(&nodes[i]);
-      DFS(component, trees_tail->object); // Calls the recursive DFS function
+      DFS(component, trees_tail->object, time); // Calls the recursive DFS function
       component++;
     }
   }
@@ -56,55 +57,49 @@ void Graph::modifiedDFS()
 }
 
 // The function which recursively calls itself to perform DFS
-void Graph::DFS(int component, BST *tree)
+void Graph::DFS(int component, BST *tree, int time)
 {
-  while (stack != nullptr)
+  while (stack != nullptr) // Doing till stack isn't empty
   {
-    Node *node = stack_pop();
+    Node *node = stack_pop(); // Getting the top element from the stack and also removing it from the stack
     listOfObjects<Node *> *ptr = node->adjacent;
-    node->visited++;
-    node->component_num = component;
-    tree->insert(node->value); // Inserts the value in the node into the BST
-    cout << node->value << " ";
-    if (node->visited == 1)
+    if (node->visited == 0) // If it is the first time getting visited, assigning an arrival time
     {
-      while (ptr != nullptr) // For all nodes adjacent to node
-      {
-        if (ptr->object->visited == 0) // If the node was unvisited
-        {
-          ptr->object->parent = node;
-          stack_push(ptr->object);
-          DFS(component, tree); // Recursive call
-        }
-        else if (ptr->object->visited == 1 && node->parent != ptr->object) // If the node was visited only once
-        {
-          ptr->object->incycle = true;
-          Node *ptr1 = node;
-          while (ptr1 != ptr->object && ptr1 != nullptr)
-          {
-            ptr1->incycle = true;
-            ptr1 = ptr1->parent;
-          }
-          stack_push(ptr->object);
-          DFS(component, tree); // Recursive call
-        }
-        ptr = ptr->next;
-      }
+      node->arrTime = time;
+      time++;
     }
-    else if (node->visited == 2)
+    node->visited++;                 // Incrementing the visited value
+    node->component_num = component; // Assigning the component value
+    tree->insert(node->value);       // Inserts the value in the node into the BST
+    while (ptr != nullptr)           // Checking for cycles
+    {
+      if (ptr->object->arrTime < node->arrTime && node->parent != ptr->object) // If arrival time of adjacent node is less than current and node is not the parent, cycle must be present
+      {
+        ptr->object->incycle = true;
+        Node *ptr1 = node;
+        while (ptr1 != ptr->object && ptr1 != nullptr)
+        {
+          ptr1->incycle = true;
+          ptr1 = ptr1->parent;
+        }
+      }
+      ptr = ptr->next;
+    }
+    ptr = node->adjacent;
+    if (node->visited < 3) // If the node is visited less than three times i.e one or two times
     {
       while (ptr != nullptr) // For all nodes adjacent to node
       {
         if (ptr->object->visited == 0) // If the node was unvisited
         {
-          ptr->object->parent = node;
+          ptr->object->parent = node; // Assigning the parent when it is visited the first time
           stack_push(ptr->object);
-          DFS(component, tree); // Recursive call
+          DFS(component, tree, time); // Recursive call
         }
         else if (ptr->object->visited == 1 && node->parent != ptr->object) // If the node was visited only once
         {
           stack_push(ptr->object);
-          DFS(component, tree); // Recursive call
+          DFS(component, tree, time); // Recursive call
         }
         ptr = ptr->next;
       }
@@ -115,7 +110,6 @@ void Graph::DFS(int component, BST *tree)
 // Function to print all the relevant results
 void Graph::printResults()
 {
-  cout << endl;
   cout << "No.of connected components : " << connected_components << endl;
   cout << "No.of nodes visited once : " << visited_once << endl;
   cout << "No.of nodes visited twice : " << visited_twice << endl;

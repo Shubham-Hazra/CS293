@@ -62,6 +62,7 @@ class Node
 public:
   int value;
   int visited;
+  int arrTime;
   listOfObjects<Node *> *adjacent;
   bool incycle;
   int component_num;
@@ -70,6 +71,7 @@ public:
   Node()
   {
     visited = 0;
+    arrTime = 100000000; // Initializing arrival times to a really large value
     adjacent = nullptr;
     incycle = false;
     component_num = 0;
@@ -233,7 +235,7 @@ public:
   }
 
   // Add appropriate method declarations as necessary for your implementation
-  void DFS(int component, BST *tree); // The function which recursively calls itself to do DFS
+  void DFS(int component, BST *tree, int time); // The function which recursively calls itself to do DFS
   void modifiedDFS();
   void printResults();
   Node *stack_pop();           // Pops the topmost element from the stack and returns it
