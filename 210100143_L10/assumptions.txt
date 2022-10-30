@@ -1,0 +1,3 @@
+Assumed that the arrival time and departure time of a train at a station have to be within 24 hours.
+
+Only considered the journeys which happen on consecutive days. i.e. didnt consider 131 arrival on tuesday and 231 departure on thursday.
