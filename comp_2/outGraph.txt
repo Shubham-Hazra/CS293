@@ -1,0 +1,7 @@
+Source Nodes: 1 2 5 
+
+Similar node pairs: (1, 2) (3, 2) (4, 1) 
+
+Collapsed graph:
+
+2: 4 5 

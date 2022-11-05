@@ -74,6 +74,11 @@ Success
 Executing "Exit reading commands from file" 
 Success
 Executing "Exit admin user"
+Executing "Find journeys"
+Chosen source station: THANE JUNCTION
+Chosen destination station: LOKMANYA TILAK TERMINUS MUMBAI
+Filtering reviews by rating
+Couldn't find list of journey codes and reviews.
 Executing "Read commands from file" 
 Success
 Executing "Enter/delete review"
@@ -533,35 +538,31 @@ Read review: Enjoyable journey with beautiful views ...
 Successfully added review 64
 Executing "Exit reading commands from file" 
 Success
-Invalid user option 0
 Executing "Find journeys"
 Chosen source station: THANE JUNCTION
-Chosen destination station: PUNE CANTONMENT
+Chosen destination station: LOKMANYA TILAK TERMINUS MUMBAI
 Filtering reviews by rating
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
-Invalid user option 21909
+Couldn't find list of journey codes and reviews.
+Invalid user option 0
+Invalid user option 0
+Invalid user option 0
+Invalid user option 0
+Invalid user option 0
+Invalid user option 0
+Invalid user option 0
+Invalid user option 0
+Invalid user option 0
+Invalid user option 0
+Invalid user option 0
+Invalid user option 0
+Invalid user option 0
+Invalid user option 0
+Invalid user option 0
+Invalid user option 0
+Invalid user option 0
+Invalid user option 0
+Invalid user option 0
+Invalid user option 0
+Invalid user option 0
+Invalid user option 0
+Invalid user option 0
